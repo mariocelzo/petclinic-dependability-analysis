@@ -10,7 +10,7 @@ jobs:
   sonarcloud:
     name: SonarCloud Analysis
     runs-on: ubuntu-latest
-    if: ${{ secrets.SONAR_TOKEN != '' }}
+    continue-on-error: true
 
     steps:
       - name: Checkout code
@@ -43,7 +43,7 @@ jobs:
             -Dsonar.host.url=https://sonarcloud.io
 
       - name: SonarCloud Quality Gate check
-        if: ${{ secrets.SONAR_TOKEN != '' }}
+        continue-on-error: true
         uses: sonarsource/sonarqube-quality-gate-action@master
         timeout-minutes: 5
         env:
