@@ -8,14 +8,11 @@ on:
   pull_request:
     branches: [main]
 
-env:
-  REGISTRY: docker.io
-  IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/petclinic-dependability
-
 jobs:
   docker:
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
+    # Only run on version tags and if DockerHub secrets are configured
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     permissions:
       contents: read

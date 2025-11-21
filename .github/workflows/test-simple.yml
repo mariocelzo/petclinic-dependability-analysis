@@ -10,6 +10,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      
+
       - name: Echo test
         run: echo "Test workflow funziona!"
