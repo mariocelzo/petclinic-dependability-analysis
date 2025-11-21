@@ -1,0 +1,110 @@
+name: Code Quality Analysis
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  sonarcloud:
+    name: SonarCloud Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Disable shallow clone for better analysis
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: "maven"
+
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: Build and analyze
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          ./mvnw clean verify sonar:sonar \
+            -Dsonar.projectKey=YOUR_PROJECT_KEY \
+            -Dsonar.organization=YOUR_ORG \
+            -Dsonar.host.url=https://sonarcloud.io
+
+      - name: SonarCloud Quality Gate check
+        uses: sonarsource/sonarqube-quality-gate-action@master
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  mutation-testing:
+    name: Mutation Testing
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: "maven"
+
+      - name: Run PITest mutation testing
+        run: ./mvnw test-compile org.pitest:pitest-maven:mutationCoverage
+
+      - name: Check mutation threshold
+        run: |
+          MUTATION_SCORE=$(grep -oP '(?<=<mutation>)[0-9]+' target/pit-reports/*/mutations.xml | head -1)
+          if [ "$MUTATION_SCORE" -lt 75 ]; then
+            echo "Mutation score ($MUTATION_SCORE%) is below threshold (75%)"
+            exit 1
+          fi
+
+      - name: Archive mutation report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: pitest-report
+          path: target/pit-reports/
+          retention-days: 5
+
+  coverage-check:
+    name: Coverage Threshold Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: "maven"
+
+      - name: Run tests with coverage
+        run: ./mvnw clean test jacoco:report
+
+      - name: Check coverage threshold
+        run: ./mvnw jacoco:check -Dcoverage.line.minimum=0.80 -Dcoverage.branch.minimum=0.75
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v3
+        with:
+          name: jacoco-report
+          path: target/site/jacoco/
+          retention-days: 5

@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    SpotBugs Security Configuration
+    Configures FindSecBugs plugin for security analysis
+-->
+<FindBugsFilter>
+    <!-- ===================================== -->
+    <!-- HIGH PRIORITY SECURITY CHECKS        -->
+    <!-- ===================================== -->
+    
+    <!-- SQL Injection -->
+    <Match>
+        <Bug pattern="SQL_INJECTION_JDBC,SQL_INJECTION_JPA,SQL_INJECTION_HIBERNATE"/>
+        <Priority value="1"/>
+    </Match>
+    
+    <!-- XSS (Cross-Site Scripting) -->
+    <Match>
+        <Bug pattern="XSS_REQUEST_PARAMETER_TO_SEND_ERROR,XSS_REQUEST_PARAMETER_TO_JSP_WRITER,XSS_SERVLET"/>
+        <Priority value="1"/>
+    </Match>
+    
+    <!-- Path Traversal -->
+    <Match>
+        <Bug pattern="PATH_TRAVERSAL_IN,PATH_TRAVERSAL_OUT"/>
+        <Priority value="1"/>
+    </Match>
+    
+    <!-- Command Injection -->
+    <Match>
+        <Bug pattern="COMMAND_INJECTION"/>
+        <Priority value="1"/>
+    </Match>
+    
+    <!-- ===================================== -->
+    <!-- CRYPTOGRAPHY                         -->
+    <!-- ===================================== -->
+    
+    <!-- Weak Cryptography -->
+    <Match>
+        <Bug pattern="WEAK_MESSAGE_DIGEST_MD5,WEAK_MESSAGE_DIGEST_SHA1,DES_USAGE,TDES_USAGE"/>
+        <Priority value="1"/>
+    </Match>
+    
+    <!-- Predictable Random -->
+    <Match>
+        <Bug pattern="PREDICTABLE_RANDOM,PREDICTABLE_RANDOM_SCALA"/>
+        <Priority value="1"/>
+    </Match>
+    
+    <!-- Static IV (Initialization Vector) -->
+    <Match>
+        <Bug pattern="STATIC_IV"/>
+        <Priority value="1"/>
+    </Match>
+    
+    <!-- ===================================== -->
+    <!-- AUTHENTICATION & SESSIONS            -->
+    <!-- ===================================== -->
+    
+    <!-- Hardcoded Password/Secret -->
+    <Match>
+        <Bug pattern="HARD_CODE_PASSWORD,HARD_CODE_KEY"/>
+        <Priority value="1"/>
+    </Match>
+    
+    <!-- Cookie Security -->
+    <Match>
+        <Bug pattern="INSECURE_COOKIE,HTTPONLY_COOKIE"/>
+        <Priority value="2"/>
+    </Match>
+    
+    <!-- ===================================== -->
+    <!-- INJECTIONS                           -->
+    <!-- ===================================== -->
+    
+    <!-- LDAP Injection -->
+    <Match>
+        <Bug pattern="LDAP_INJECTION"/>
+        <Priority value="1"/>
+    </Match>
+    
+    <!-- XML External Entity (XXE) -->
+    <Match>
+        <Bug pattern="XXE_XMLSTREAMREADER,XXE_SAXPARSER,XXE_XMLREADER,XXE_DOCUMENT"/>
+        <Priority value="1"/>
+    </Match>
+    
+    <!-- ===================================== -->
+    <!-- DESERIALIZATION                      -->
+    <!-- ===================================== -->
+    
+    <!-- Unsafe Deserialization -->
+    <Match>
+        <Bug pattern="OBJECT_DESERIALIZATION,UNSAFE_JACKSON_DESERIALIZATION"/>
+        <Priority value="1"/>
+    </Match>
+    
+    <!-- ===================================== -->
+    <!-- FILE OPERATIONS                      -->
+    <!-- ===================================== -->
+    
+    <!-- Unvalidated File Upload -->
+    <Match>
+        <Bug pattern="FILE_UPLOAD_FILENAME"/>
+        <Priority value="2"/>
+    </Match>
+    
+    <!-- Zip Slip -->
+    <Match>
+        <Bug pattern="ZIPENTRY_OVERWRITE"/>
+        <Priority value="1"/>
+    </Match>
+    
+    <!-- ===================================== -->
+    <!-- SPRING SECURITY                      -->
+    <!-- ===================================== -->
+    
+    <!-- CSRF Protection -->
+    <Match>
+        <Bug pattern="SPRING_CSRF_PROTECTION_DISABLED,SPRING_CSRF_UNRESTRICTED_REQUEST_MAPPING"/>
+        <Priority value="2"/>
+    </Match>
+    
+    <!-- Spring Endpoint Security -->
+    <Match>
+        <Bug pattern="PERMISSIVE_CORS,SPRING_ENDPOINT"/>
+        <Priority value="2"/>
+    </Match>
+    
+    <!-- ===================================== -->
+    <!-- EXCLUSIONS (False Positives)         -->
+    <!-- ===================================== -->
+    
+    <!-- Exclude test files from security checks -->
+    <Match>
+        <Class name="~.*Test$"/>
+    </Match>
+    
+    <Match>
+        <Class name="~.*Tests$"/>
+    </Match>
+    
+    <!-- Exclude generated code -->
+    <Match>
+        <Package name="~.*\.generated\..*"/>
+    </Match>
+    
+    <!-- Exclude specific known false positives (adjust as needed) -->
+    <!-- Example: Exclude H2 database password in dev environment -->
+    <!--
+    <Match>
+        <Class name="com.example.config.DatabaseConfig"/>
+        <Bug pattern="HARD_CODE_PASSWORD"/>
+    </Match>
+    -->
+    
+    <!-- ===================================== -->
+    <!-- REPORT CONFIGURATION                 -->
+    <!-- ===================================== -->
+    
+    <!-- Include all security bugs by default -->
+    <Match>
+        <Bug category="SECURITY"/>
+    </Match>
+    
+</FindBugsFilter>

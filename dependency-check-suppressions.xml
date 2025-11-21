@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+    <!-- 
+        Dependency-Check Suppressions File
+        
+        Questo file contiene soppressioni per falsi positivi noti.
+        Aggiungi qui CVE che hai verificato come non applicabili.
+    -->
+    
+    <!-- Esempio di soppressione (rimuovi se non necessario)
+    <suppress>
+        <notes><![CDATA[
+        False positive - questa dipendenza è usata solo in test
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.example/.*$</packageUrl>
+        <cve>CVE-2021-XXXXX</cve>
+    </suppress>
+    -->
+    
+</suppressions>
