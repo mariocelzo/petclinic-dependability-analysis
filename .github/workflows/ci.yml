@@ -3,37 +3,39 @@ name: CI Pipeline
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
-  test:
-    name: Build Test and Coverage
+  build:
+    name: Build and Test
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
         
-      - name: Set up JDK 21
+      - name: Setup Java 21
         uses: actions/setup-java@v4
         with:
-          java-version: "21"
-          distribution: "temurin"
-          cache: "maven"
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
           
       - name: Build
-        run: ./mvnw clean compile
+        run: ./mvnw clean compile -B
         
       - name: Test
-        run: ./mvnw test
+        run: ./mvnw test -B
         
-      - name: Coverage
-        run: ./mvnw jacoco:report
+      - name: Coverage Report
+        run: ./mvnw jacoco:report -B
         
-      - name: Upload artifacts
+      - name: Upload Reports
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: reports
+          name: test-reports
           path: |
             target/surefire-reports/
             target/site/jacoco/
