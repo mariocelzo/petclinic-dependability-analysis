@@ -15,7 +15,7 @@ CI/CD & Build Success & 100\% & 100\% & \checkmark \\
 Code Quality & SonarCloud Grade & A & A & \checkmark \\
 Docker & Image on Hub & Published & Published & \checkmark \\
 Coverage & Line Coverage & >80\% & 91.9\% & \checkmark \\
-Mutation & Mutation Score & >75\% & Pending & $\circ$ \\
+Mutation & Mutation Score & >75\% & 85\% & \checkmark \\
 Performance & Baseline & Set & Pending & $\circ$ \\
 Test Gen & Coverage Gain & +5\% & Pending & $\circ$ \\
 Security & Critical Vulns & 0 & 0 & \checkmark \\
@@ -82,6 +82,23 @@ Docker containerization was successfully implemented:
     \item \textbf{Automated publishing}: Images pushed to DockerHub on each commit
 \end{itemize}
 
+\subsubsection{Effective Mutation Testing}
+
+PITest mutation testing demonstrated high test effectiveness:
+\begin{itemize}
+    \item \textbf{Mutation coverage}: 85\% (47/55 mutations killed)
+    \item \textbf{Test strength}: 94\% (47/50 detectable mutations killed)
+    \item \textbf{Line coverage}: 98\% for mutated classes
+    \item \textbf{Key insight}: Line coverage alone (91.9\%) hides potential gaps; mutation testing reveals true test quality
+\end{itemize}
+
+Three mutations survived, identifying specific areas for test improvement:
+\begin{enumerate}
+    \item \texttt{Visit.getDescription()}: Value assertion missing
+    \item \texttt{PetValidator.supports()}: Negative case not tested
+    \item Conditional logic: One negated condition undetected
+\end{enumerate}
+
 \subsection{Challenges Encountered and Solutions}
 
 \subsubsection{Challenge 1: Java Version Compatibility}
@@ -129,42 +146,77 @@ received response code 403
     \item \textbf{Fully Automated Pipeline}: All quality checks run automatically on every push
     \item \textbf{Triple-A Quality Rating}: Security, Reliability, and Maintainability all rated A
     \item \textbf{Exceptional Coverage}: 91.9\% exceeds industry-standard 80\% target
+    \item \textbf{Strong Mutation Score}: 85\% mutation coverage indicates high test effectiveness
     \item \textbf{Zero Security Issues}: No vulnerabilities or security hotspots
     \item \textbf{Production-Ready Container}: Docker image with security best practices
     \item \textbf{Comprehensive Documentation}: All issues and solutions documented
 \end{enumerate}
-    \item Isolated benchmarks from I/O operations
-\end{itemize}
+
+\subsubsection{Challenge 4: PITest JUnit Platform Version Conflict}
+
+\textbf{Problem}: PITest mutation testing failed with cryptic \texttt{OutputDirectoryProvider not available} error.
+
+\textbf{Root Cause}: Spring Boot 4.0.0-M3 uses JUnit Platform 1.13.4, but the \texttt{pitest-junit5-plugin} bundles JUnit Platform 1.11.0. This version mismatch caused test discovery to fail.
+
+\textbf{Error Message}:
+\begin{verbatim}
+JUnitException: OutputDirectoryProvider not available; 
+probably due to unaligned versions of 
+junit-platform-engine and junit-platform-launcher
+\end{verbatim}
+
+\textbf{Solution}: Excluded transitive JUnit dependencies from the PITest plugin and explicitly declared the correct versions:
+\begin{verbatim}
+<exclusions>
+    <exclusion>
+        <groupId>org.junit.platform</groupId>
+        <artifactId>*</artifactId>
+    </exclusion>
+</exclusions>
+\end{verbatim}
+
+\textbf{Additional Issue}: The \texttt{RETURN\_VALS} mutator group was renamed in PITest 1.17.x to specific mutators (\texttt{EMPTY\_RETURNS}, \texttt{NULL\_RETURNS}, etc.).
+
+\textbf{Lesson Learned}: When using bleeding-edge framework versions (Spring Boot 4.0.0-M3), tool compatibility may require manual dependency resolution.
 
 \subsection{Comparative Analysis}
 
 \subsubsection{Coverage vs. Mutation Score}
 
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.8\textwidth]{figures/coverage-vs-mutation.png}
-\caption{Relationship between Coverage and Mutation Score}
-\label{fig:coverage-mutation}
-\end{figure}
-
-Observation: High code coverage (>90\%) doesn't guarantee high mutation score. 
-Class X had 92\% coverage but only 68\% mutation score, indicating low-quality tests.
-
-\subsubsection{Before/After Comparison}
+A key insight from the analysis is that high line coverage does not guarantee effective tests:
 
 \begin{table}[h]
 \centering
-\caption{Improvement Metrics}
-\label{tab:improvements}
+\caption{Line Coverage vs. Mutation Coverage Comparison}
+\label{tab:coverage-vs-mutation}
 \begin{tabular}{lccc}
 \toprule
-\textbf{Metric} & \textbf{Before} & \textbf{After} & \textbf{Change} \\
+\textbf{Package} & \textbf{Line Coverage} & \textbf{Mutation Coverage} & \textbf{Gap} \\
 \midrule
-Line Coverage & [X]\% & [Y]\% & +[Z]\% \\
-Mutation Score & [X]\% & [Y]\% & +[Z]\% \\
-Critical Bugs & [X] & 0 & -[X] \\
-Vulnerabilities & [X] & [Y] & -[Z] \\
-SonarCloud Grade & [X] & [Y] & [Change] \\
+petclinic.owner & 98\% & 84\% & 14\% \\
+petclinic.vet & 100\% & 100\% & 0\% \\
+Overall & 98\% (mutated) & 85\% & 13\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The \texttt{petclinic.vet} package demonstrates ideal testing: 100\% line coverage translates to 100\% mutation coverage. In contrast, the \texttt{petclinic.owner} package has 98\% line coverage but only 84\% mutation coverage, indicating tests that execute code but don't effectively validate behavior.
+
+\subsubsection{Project Progress Summary}
+
+\begin{table}[h]
+\centering
+\caption{Progress Metrics (28 November 2025)}
+\label{tab:progress}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Metric} & \textbf{Target} & \textbf{Actual} & \textbf{Status} \\
+\midrule
+Line Coverage & > 80\% & 91.9\% & \checkmark \\
+Mutation Score & > 75\% & 85\% & \checkmark \\
+Test Strength & > 90\% & 94\% & \checkmark \\
+SonarCloud Grade & A & A & \checkmark \\
+Vulnerabilities & 0 & 0 & \checkmark \\
 \bottomrule
 \end{tabular}
 \end{table}

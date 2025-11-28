@@ -295,12 +295,133 @@ Model Layer & > 95\% & \checkmark Excellent \\
 The high coverage indicates a mature and well-tested codebase. The Spring PetClinic project includes comprehensive unit and integration tests.
 
 % ============================================================================
-% CRITERIA 6-9: PENDING
+% CRITERION 6: MUTATION TESTING
 % ============================================================================
 \subsection{Criterion 6: Mutation Testing}
 \label{subsec:mutation}
 
-\textit{This analysis is scheduled for Week 3 of the project. PITest will be configured to evaluate test effectiveness.}
+Mutation testing was performed using PITest 1.17.1 to evaluate the effectiveness of the test suite beyond traditional code coverage metrics.
+
+\subsubsection{Configuration Challenges}
+
+Integrating PITest with Spring Boot 4.0.0-M3 presented significant challenges:
+
+\begin{enumerate}
+    \item \textbf{JUnit Platform Version Conflict}: The \texttt{pitest-junit5-plugin} bundled JUnit Platform 1.11.0, while Spring Boot 4.0.0-M3 required version 1.13.4. This caused \texttt{OutputDirectoryProvider} errors during test discovery.
+    
+    \item \textbf{Mutator Name Changes}: The legacy \texttt{RETURN\_VALS} mutator group was replaced with specific mutators: \texttt{EMPTY\_RETURNS}, \texttt{FALSE\_RETURNS}, \texttt{TRUE\_RETURNS}, \texttt{NULL\_RETURNS}, and \texttt{PRIMITIVE\_RETURNS}.
+    
+    \item \textbf{Java 21 Module Access}: Required JVM arguments for module access to prevent runtime errors.
+\end{enumerate}
+
+The solution involved explicitly excluding transitive JUnit dependencies and specifying the correct versions:
+
+\begin{lstlisting}[language=XML, caption=PITest Configuration with JUnit 5.13.4 Compatibility]
+<dependency>
+    <groupId>org.pitest</groupId>
+    <artifactId>pitest-junit5-plugin</artifactId>
+    <version>1.2.1</version>
+    <exclusions>
+        <exclusion>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>*</artifactId>
+        </exclusion>
+    </exclusions>
+</dependency>
+<dependency>
+    <groupId>org.junit.platform</groupId>
+    <artifactId>junit-platform-launcher</artifactId>
+    <version>1.13.4</version>
+</dependency>
+\end{lstlisting}
+
+\subsubsection{Analysis Results}
+
+The mutation testing analysis produced excellent results:
+
+\begin{table}[h]
+\centering
+\caption{PITest Mutation Testing Results (28 November 2025)}
+\label{tab:pitest-results}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Metric} & \textbf{Value} & \textbf{Target} & \textbf{Status} \\
+\midrule
+Mutations Generated & 55 & - & - \\
+Mutations Killed & 47 & > 80\% & \checkmark 85\% \\
+Mutations Survived & 3 & < 10\% & \checkmark 5.5\% \\
+No Coverage & 5 & < 10\% & \checkmark 9\% \\
+Test Strength & 94\% & > 90\% & \checkmark Exceeded \\
+Line Coverage (mutated classes) & 98\% & > 95\% & \checkmark Exceeded \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Results by Mutator}
+
+\begin{table}[h]
+\centering
+\caption{Mutation Results by Mutator Type}
+\label{tab:mutator-breakdown}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Mutator} & \textbf{Generated} & \textbf{Killed} & \textbf{Kill Rate} \\
+\midrule
+EmptyObjectReturnValsMutator & 28 & 27 & 96\% \\
+NullReturnValsMutator & 15 & 10 & 67\% \\
+NegateConditionalsMutator & 10 & 9 & 90\% \\
+BooleanFalseReturnValsMutator & 1 & 1 & 100\% \\
+BooleanTrueReturnValsMutator & 1 & 0 & 0\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Package Analysis}
+
+\begin{table}[h]
+\centering
+\caption{Mutation Coverage by Package}
+\label{tab:mutation-package}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Package} & \textbf{Classes} & \textbf{Line Cov.} & \textbf{Mutation Cov.} & \textbf{Test Strength} \\
+\midrule
+petclinic.owner & 8 & 98\% & 84\% & 93\% \\
+petclinic.vet & 3 & 100\% & 100\% & 100\% \\
+\textbf{Total} & 11 & 98\% & 85\% & 94\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Identified Weaknesses}
+
+Three mutations survived, indicating potential test improvements:
+
+\begin{enumerate}
+    \item \textbf{Visit.getDescription()}: Test does not verify the returned value equals the set value.
+    \item \textbf{PetValidator.supports()}: Test does not check that non-Pet classes are rejected.
+    \item \textbf{Conditional Negation}: One negated condition was not detected.
+\end{enumerate}
+
+\subsubsection{Comparison: Line Coverage vs. Mutation Coverage}
+
+\begin{table}[h]
+\centering
+\caption{Traditional Coverage vs. Mutation Testing}
+\label{tab:coverage-comparison}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Metric} & \textbf{JaCoCo} & \textbf{PITest} \\
+\midrule
+Line Coverage & 91.9\% & 98\% (mutated classes) \\
+Branch Coverage & 73.3\% & N/A \\
+Mutation Coverage & N/A & 85\% \\
+Test Strength & N/A & 94\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+This comparison illustrates that high line coverage (91.9\%) does not guarantee effective tests. The 85\% mutation coverage reveals that approximately 15\% of code changes would go undetected, highlighting the value of mutation testing.
 
 \subsection{Criterion 7: Performance Benchmarks}
 \label{subsec:performance}

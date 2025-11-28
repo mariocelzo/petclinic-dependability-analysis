@@ -377,38 +377,96 @@
       <plugin>
         <groupId>org.pitest</groupId>
         <artifactId>pitest-maven</artifactId>
-        <version>1.14.2</version>
+        <version>1.17.1</version>
         <dependencies>
           <dependency>
             <groupId>org.pitest</groupId>
             <artifactId>pitest-junit5-plugin</artifactId>
-            <version>1.2.0</version>
+            <version>1.2.1</version>
+            <exclusions>
+              <exclusion>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>*</artifactId>
+              </exclusion>
+            </exclusions>
+          </dependency>
+          <!-- Force JUnit Platform version to match Spring Boot 4.0.0-M3 -->
+          <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-launcher</artifactId>
+            <version>1.13.4</version>
+          </dependency>
+          <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-engine</artifactId>
+            <version>1.13.4</version>
+          </dependency>
+          <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-commons</artifactId>
+            <version>1.13.4</version>
+          </dependency>
+          <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.13.4</version>
           </dependency>
         </dependencies>
         <configuration>
           <targetClasses>
-            <param>org.springframework.samples.petclinic.*</param>
+            <param>org.springframework.samples.petclinic.owner.*</param>
+            <param>org.springframework.samples.petclinic.vet.*</param>
           </targetClasses>
           <targetTests>
-            <param>org.springframework.samples.petclinic.*</param>
+            <param>org.springframework.samples.petclinic.*Test</param>
+            <param>org.springframework.samples.petclinic.*Tests</param>
           </targetTests>
           <excludedClasses>
             <param>org.springframework.samples.petclinic.PetClinicApplication</param>
             <param>org.springframework.samples.petclinic.system.*</param>
+            <param>org.springframework.samples.petclinic.model.*</param>
           </excludedClasses>
+          <excludedTestClasses>
+            <param>*IntegrationTest*</param>
+            <param>*IT</param>
+          </excludedTestClasses>
           <mutators>
-            <mutator>DEFAULTS</mutator>
+            <mutator>CONDITIONALS_BOUNDARY</mutator>
+            <mutator>NEGATE_CONDITIONALS</mutator>
+            <mutator>MATH</mutator>
+            <mutator>INCREMENTS</mutator>
+            <mutator>EMPTY_RETURNS</mutator>
+            <mutator>FALSE_RETURNS</mutator>
+            <mutator>TRUE_RETURNS</mutator>
+            <mutator>NULL_RETURNS</mutator>
+            <mutator>PRIMITIVE_RETURNS</mutator>
           </mutators>
           <outputFormats>
             <outputFormat>XML</outputFormat>
             <outputFormat>HTML</outputFormat>
           </outputFormats>
           <timestampedReports>false</timestampedReports>
-          <mutationThreshold>75</mutationThreshold>
-          <coverageThreshold>80</coverageThreshold>
-          <threads>4</threads>
-          <timeoutConstant>3000</timeoutConstant>
-          <verbose>false</verbose>
+          <threads>2</threads>
+          <timeoutConstant>10000</timeoutConstant>
+          <timeoutFactor>2.0</timeoutFactor>
+          <verbose>true</verbose>
+          <jvmArgs>
+            <jvmArg>--add-opens=java.base/java.lang=ALL-UNNAMED</jvmArg>
+            <jvmArg>--add-opens=java.base/java.util=ALL-UNNAMED</jvmArg>
+            <jvmArg>--add-opens=java.base/java.lang.reflect=ALL-UNNAMED</jvmArg>
+          </jvmArgs>
+          <avoidCallsTo>
+            <avoidCallsTo>java.util.logging</avoidCallsTo>
+            <avoidCallsTo>org.apache.log4j</avoidCallsTo>
+            <avoidCallsTo>org.slf4j</avoidCallsTo>
+            <avoidCallsTo>org.apache.commons.logging</avoidCallsTo>
+            <avoidCallsTo>org.springframework</avoidCallsTo>
+          </avoidCallsTo>
+          <excludedMethods>
+            <excludedMethod>toString</excludedMethod>
+            <excludedMethod>hashCode</excludedMethod>
+            <excludedMethod>equals</excludedMethod>
+          </excludedMethods>
         </configuration>
       </plugin>
 

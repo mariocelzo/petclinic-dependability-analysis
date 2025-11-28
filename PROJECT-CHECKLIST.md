@@ -56,7 +56,7 @@
 - [x] Docker-compose for orchestration
 - [x] Instructions in README
 - [x] **Deadline**: Week 1
-- **Status**: � Completed
+- **Status**: ✅ Completed
 - **Notes**: Testato localmente, funziona correttamente
 
 ### ✅ 5. Code Coverage (JaCoCo) - COMPLETATO
@@ -66,22 +66,28 @@
 - [x] Critical paths identified
 - [x] Analysis documented
 - [x] **Deadline**: Week 2
-- **Status**: � Completed
+- **Status**: ✅ Completed
 - **Notes**: 
   - Report integrato con SonarCloud
   - 44 test passano con successo
   - Supera target 80%
 
-### 🔴 6. Mutation Testing (PITest)
-- [ ] PITest plugin configured
-- [ ] Mutation campaign executed
-- [ ] Mutation score calculated
-- [ ] Survived mutants analyzed
-- [ ] Weak test spots identified
-- [ ] Test improvements proposed/implemented
-- [ ] **Deadline**: Week 3
-- **Status**: 🔴 Not Started
-- **Notes**: Prossimo step da implementare
+### ✅ 6. Mutation Testing (PITest) - COMPLETATO
+- [x] PITest plugin configured (v1.17.1)
+- [x] Mutation campaign executed
+- [x] Mutation score calculated: 85% (47/55 killed)
+- [x] Survived mutants analyzed: 3 mutazioni sopravvissute
+- [x] Weak test spots identified (Visit.getDescription, PetValidator.supports)
+- [x] Test improvements proposed
+- [x] **Deadline**: Week 3
+- **Status**: ✅ Completed
+- **Notes**: 
+  - Test strength: 94%
+  - Line coverage (mutated classes): 98%
+  - Configurazione risolta per JUnit Platform 1.13.4 (Spring Boot 4.0.0-M3)
+  - Mutatori: CONDITIONALS_BOUNDARY, NEGATE_CONDITIONALS, MATH, INCREMENTS, *_RETURNS
+  - 5 mutazioni senza copertura identificate
+  - Report HTML/XML in target/pit-reports/
 
 ### 🔴 7. Performance Tests (JMH)
 - [ ] JMH dependency added
@@ -92,7 +98,7 @@
 - [ ] Bottlenecks documented
 - [ ] **Deadline**: Week 4
 - **Status**: 🔴 Not Started
-- **Notes**:
+- **Notes**: Prossimo step da implementare
 
 ### 🔴 8. Automated Test Generation
 - [ ] Coverage gaps identified
@@ -115,8 +121,6 @@
 - [ ] **Deadline**: Week 5
 - **Status**: 🟡 Partial
 - **Notes**: SonarCloud non rileva vulnerabilità. OWASP DC richiede NVD API key.
-- **Status**: 🔴 Not Started
-- **Notes**:
 
 ## Documentation & Reporting
 
