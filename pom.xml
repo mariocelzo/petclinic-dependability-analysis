@@ -17,6 +17,9 @@
 
   <properties>
 
+    <!-- SonarCloud -->
+    <sonar.organization>mariocelzo</sonar.organization>
+
     <!-- Generic properties -->
     <java.version>21</java.version>
     <maven.compiler.release>21</maven.compiler.release>
