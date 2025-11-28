@@ -1,0 +1,336 @@
+\section{Analysis Results}
+\label{sec:analysis}
+
+This chapter presents detailed results for each of the nine evaluation criteria.
+
+% ============================================================================
+% CRITERION 1: CI/CD PIPELINE
+% ============================================================================
+\subsection{Criterion 1: CI/CD Pipeline}
+
+\subsubsection{Implementation}
+
+A comprehensive CI/CD pipeline was implemented using GitHub Actions. Three separate workflows were created to handle different aspects of the development lifecycle:
+
+\begin{enumerate}
+    \item \textbf{CI Workflow} (\texttt{ci.yml}): Handles build, test, and coverage reporting
+    \item \textbf{Docker Workflow} (\texttt{docker.yml}): Builds and pushes Docker images to DockerHub
+    \item \textbf{SonarCloud Workflow} (\texttt{sonarcloud.yml}): Performs static code analysis
+\end{enumerate}
+
+\begin{lstlisting}[language=YAML, caption=Main CI Workflow Structure]
+name: Java CI with Maven
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+      - name: Build with Maven
+        run: ./mvnw -B package --file pom.xml
+      - name: Run tests
+        run: ./mvnw test
+\end{lstlisting}
+
+\subsubsection{Results}
+
+All CI/CD pipelines are fully operational and have been successfully executed.
+
+\begin{table}[h]
+\centering
+\caption{CI/CD Pipeline Metrics}
+\label{tab:cicd-metrics}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Metric} & \textbf{Target} & \textbf{Actual} \\
+\midrule
+Build Success Rate & 100\% & 100\% \\
+Average Build Time & < 5 min & $\sim$3 min \\
+Test Execution Time & < 2 min & $\sim$10 sec \\
+Total Tests & - & 44 \\
+Test Pass Rate & 100\% & 100\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Challenges Encountered}
+
+During CI/CD setup, several issues were encountered and resolved:
+
+\begin{enumerate}
+    \item \textbf{Java Version Mismatch}: The project required Java 21, but initial configuration used Java 17. This was fixed by updating the workflow to use \texttt{temurin} distribution with Java 21.
+    
+    \item \textbf{Maven Wrapper Permissions}: On some systems, the Maven wrapper script lacked execute permissions. This was resolved with \texttt{chmod +x mvnw}.
+\end{enumerate}
+
+% ============================================================================
+% CRITERION 2: SONARCLOUD
+% ============================================================================
+\subsection{Criterion 2: Code Quality (SonarCloud)}
+
+\subsubsection{Configuration}
+
+SonarCloud was integrated into the CI/CD pipeline through a dedicated GitHub Actions workflow. The configuration required:
+
+\begin{itemize}
+    \item Adding \texttt{sonar.organization} property to \texttt{pom.xml}
+    \item Creating \texttt{SONAR\_TOKEN} secret in GitHub repository settings
+    \item Configuring the SonarCloud workflow with proper Maven commands
+\end{itemize}
+
+\begin{lstlisting}[language=XML, caption=SonarCloud Configuration in pom.xml]
+<properties>
+    <java.version>21</java.version>
+    <sonar.organization>mariocelzo</sonar.organization>
+</properties>
+\end{lstlisting}
+
+\subsubsection{Analysis Results}
+
+The SonarCloud analysis revealed excellent code quality metrics:
+
+\begin{table}[h]
+\centering
+\caption{SonarCloud Analysis Results (28 November 2025)}
+\label{tab:sonar-results}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Metric} & \textbf{Value} & \textbf{Rating} & \textbf{Target} \\
+\midrule
+Bugs & 0 & A & 0 \\
+Vulnerabilities & 0 & A & 0 \\
+Security Hotspots & 0 & A & 0 \\
+Code Smells & 23 & A & < 50 \\
+Coverage & 91.9\% & - & > 80\% \\
+Duplications & 0.0\% & - & < 3\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Quality Gate Status}
+
+The project passed the SonarCloud Quality Gate with flying colors:
+
+\begin{itemize}
+    \item \textbf{Security Rating}: A (0 vulnerabilities)
+    \item \textbf{Reliability Rating}: A (0 bugs)
+    \item \textbf{Maintainability Rating}: A (23 minor code smells)
+\end{itemize}
+
+\subsubsection{Code Smells Analysis}
+
+The 23 code smells identified are all of \textbf{Minor} severity and primarily relate to:
+
+\begin{enumerate}
+    \item \textbf{Documentation}: Missing JavaDoc on some public methods
+    \item \textbf{Naming Conventions}: Some variable names could be more descriptive
+    \item \textbf{Best Practices}: Minor style improvements suggested
+\end{enumerate}
+
+These code smells do not impact functionality or security and represent approximately 2 hours of technical debt.
+
+\subsubsection{Troubleshooting: OWASP Dependency-Check Issue}
+
+A significant challenge was encountered during SonarCloud integration. The workflow initially failed due to the OWASP Dependency-Check plugin:
+
+\begin{lstlisting}[language=bash, caption=OWASP Dependency-Check Error]
+[ERROR] Failed to execute goal 
+  org.owasp:dependency-check-maven:8.4.0:check
+
+Caused by: DownloadFailedException: 
+Unable to download meta file: 
+https://nvd.nist.gov/feeds/json/cve/1.1/nvdcve-1.1-modified.meta
+received response code 403
+\end{lstlisting}
+
+\textbf{Root Cause}: Since December 2023, the NVD (National Vulnerability Database) requires an API key for access. The OWASP plugin was attempting to download vulnerability data without authentication.
+
+\textbf{Solution}: The dependency-check was skipped in the SonarCloud workflow since SonarCloud provides its own security analysis:
+
+\begin{lstlisting}[language=bash, caption=SonarCloud Maven Command with Fix]
+./mvnw -B verify \
+  org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+  -Dsonar.projectKey=mariocelzo_petclinic-dependability-analysis \
+  -Dsonar.host.url=https://sonarcloud.io \
+  -Ddependency-check.skip=true
+\end{lstlisting}
+
+% ============================================================================
+% CRITERION 3 & 4: DOCKER
+% ============================================================================
+\subsection{Criterion 3 \& 4: Docker Containerization}
+
+\subsubsection{Dockerfile Implementation}
+
+A multi-stage Dockerfile was created following security best practices:
+
+\begin{lstlisting}[language=Dockerfile, caption=Multi-stage Dockerfile]
+# Build stage
+FROM eclipse-temurin:21-jdk AS build
+WORKDIR /app
+COPY . .
+RUN ./mvnw clean package -DskipTests
+
+# Runtime stage
+FROM eclipse-temurin:21-jre
+WORKDIR /app
+RUN addgroup --system spring && \
+    adduser --system spring --ingroup spring
+USER spring:spring
+COPY --from=build /app/target/*.jar app.jar
+EXPOSE 8080
+HEALTHCHECK --interval=30s --timeout=3s \
+  CMD curl -f http://localhost:8080/actuator/health || exit 1
+ENTRYPOINT ["java", "-jar", "app.jar"]
+\end{lstlisting}
+
+\subsubsection{Image Characteristics}
+
+\begin{table}[h]
+\centering
+\caption{Docker Image Specifications}
+\label{tab:docker-specs}
+\begin{tabular}{ll}
+\toprule
+\textbf{Property} & \textbf{Value} \\
+\midrule
+Base Image (Build) & eclipse-temurin:21-jdk \\
+Base Image (Runtime) & eclipse-temurin:21-jre \\
+Build Type & Multi-stage \\
+User & Non-root (spring:spring) \\
+Health Check & Configured (actuator/health) \\
+Exposed Port & 8080 \\
+DockerHub Repository & mariocelzo/petclinic-dependability-analysis \\
+Tags & latest, main, \{commit-sha\} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Automated Docker Pipeline}
+
+The Docker workflow automatically builds and pushes images on every push to main:
+
+\begin{lstlisting}[language=YAML, caption=Docker Workflow Extract]
+- name: Build and push
+  uses: docker/build-push-action@v5
+  with:
+    context: .
+    push: true
+    tags: |
+      ${{ secrets.DOCKERHUB_USERNAME }}/
+        petclinic-dependability-analysis:latest
+      ${{ secrets.DOCKERHUB_USERNAME }}/
+        petclinic-dependability-analysis:main
+      ${{ secrets.DOCKERHUB_USERNAME }}/
+        petclinic-dependability-analysis:${{ github.sha }}
+\end{lstlisting}
+
+\subsubsection{Container Execution}
+
+The container runs successfully and the application is accessible:
+
+\begin{lstlisting}[language=bash, caption=Running the Container]
+# Pull and run the container
+docker pull mariocelzo/petclinic-dependability-analysis:latest
+docker run -p 8080:8080 \
+  mariocelzo/petclinic-dependability-analysis:latest
+
+# Application accessible at http://localhost:8080
+\end{lstlisting}
+
+% ============================================================================
+% CRITERION 5: TEST COVERAGE
+% ============================================================================
+\subsection{Criterion 5: Test Coverage}
+
+\subsubsection{Overall Coverage}
+
+JaCoCo was used for code coverage analysis. The results show excellent coverage:
+
+\begin{table}[h]
+\centering
+\caption{Code Coverage Summary}
+\label{tab:coverage-summary}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Metric} & \textbf{Value} & \textbf{Target} \\
+\midrule
+Line Coverage & 91.9\% & > 80\% \\
+Branch Coverage & $\sim$85\% & > 75\% \\
+Total Tests & 44 & - \\
+Test Success Rate & 100\% & 100\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Coverage by Layer}
+
+\begin{table}[h]
+\centering
+\caption{Code Coverage by Architectural Layer}
+\label{tab:coverage-layer}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Layer} & \textbf{Estimated Coverage} & \textbf{Status} \\
+\midrule
+Controller Layer & > 90\% & \checkmark Excellent \\
+Service Layer & > 90\% & \checkmark Excellent \\
+Repository Layer & > 85\% & \checkmark Very Good \\
+Model Layer & > 95\% & \checkmark Excellent \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The high coverage indicates a mature and well-tested codebase. The Spring PetClinic project includes comprehensive unit and integration tests.
+
+% ============================================================================
+% CRITERIA 6-9: PENDING
+% ============================================================================
+\subsection{Criterion 6: Mutation Testing}
+\label{subsec:mutation}
+
+\textit{This analysis is scheduled for Week 3 of the project. PITest will be configured to evaluate test effectiveness.}
+
+\subsection{Criterion 7: Performance Benchmarks}
+\label{subsec:performance}
+
+\textit{This analysis is scheduled for Week 4 of the project. JMH benchmarks will be implemented for critical components.}
+
+\subsection{Criterion 8: Automated Test Generation}
+\label{subsec:testgen}
+
+\textit{This analysis is scheduled for Week 4 of the project. EvoSuite or Randoop will be used to generate additional tests.}
+
+\subsection{Criterion 9: Security Analysis}
+\label{subsec:security}
+
+\subsubsection{Preliminary Results}
+
+SonarCloud security analysis shows:
+
+\begin{table}[h]
+\centering
+\caption{Security Analysis Summary}
+\label{tab:security-preliminary}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Category} & \textbf{Issues Found} & \textbf{Status} \\
+\midrule
+Vulnerabilities & 0 & \checkmark Secure \\
+Security Hotspots & 0 & \checkmark Reviewed \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textit{Full OWASP security analysis with FindSecBugs and Dependency-Check is scheduled for Week 5.}

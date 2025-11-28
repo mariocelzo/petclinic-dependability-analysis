@@ -1,0 +1,100 @@
+\section{Background and Related Work}
+\label{sec:background}
+
+\subsection{Software Dependability}
+
+Software dependability is defined by Avizienis et al. \cite{avizienis2004basic} as 
+"the ability to deliver service that can justifiably be trusted." It encompasses 
+several key attributes:
+
+\begin{description}
+    \item[Availability] Readiness for correct service
+    \item[Reliability] Continuity of correct service
+    \item[Safety] Absence of catastrophic consequences on the user(s) and the environment
+    \item[Integrity] Absence of improper system alterations
+    \item[Maintainability] Ability to undergo modifications and repairs
+\end{description}
+
+\subsection{Analysis Tools Overview}
+
+\subsubsection{Code Coverage Analysis - JaCoCo}
+
+JaCoCo (Java Code Coverage) is a free code coverage library for Java \cite{jacoco}. 
+It provides several coverage metrics:
+
+\begin{itemize}
+    \item \textbf{Line Coverage}: Percentage of executable lines executed
+    \item \textbf{Branch Coverage}: Percentage of branches (if/else) executed
+    \item \textbf{Method Coverage}: Percentage of methods invoked
+    \item \textbf{Complexity Coverage}: Coverage weighted by cyclomatic complexity
+\end{itemize}
+
+\subsubsection{Mutation Testing - PITest}
+
+PITest performs mutation testing by introducing small changes (mutations) to the code 
+and verifying if tests detect them \cite{pitest}. A high mutation score indicates 
+effective tests.
+
+Mutation operators include:
+\begin{itemize}
+    \item Conditionals boundary mutator (e.g., $<$ to $\leq$)
+    \item Negate conditionals mutator (e.g., $==$ to $\neq$)
+    \item Math mutator (e.g., $+$ to $-$)
+    \item Return values mutator
+\end{itemize}
+
+\subsubsection{Performance Benchmarking - JMH}
+
+Java Microbenchmark Harness (JMH) is a framework for writing, running, and analyzing 
+micro-benchmarks \cite{jmh}. It handles:
+\begin{itemize}
+    \item JVM warmup
+    \item JIT compilation effects
+    \item Dead code elimination
+    \item Garbage collection interference
+\end{itemize}
+
+\subsubsection{Automated Test Generation - EvoSuite}
+
+EvoSuite automatically generates JUnit tests using search-based techniques \cite{fraser2011evosuite}. 
+It employs genetic algorithms to evolve test suites that maximize coverage.
+
+\subsubsection{Security Analysis - OWASP Tools}
+
+\begin{description}
+    \item[Dependency-Check] Identifies known vulnerabilities (CVEs) in project dependencies
+    \item[FindSecBugs] SpotBugs plugin for security-specific bug patterns
+\end{description}
+
+\subsection{Quality Metrics}
+
+\subsubsection{Code Coverage Thresholds}
+
+Industry standards suggest:
+\begin{itemize}
+    \item Minimum acceptable: 60-70\%
+    \item Good coverage: 80-85\%
+    \item Excellent coverage: 90\%+
+\end{itemize}
+
+However, Marick \cite{marick1999coverage} notes that high coverage doesn't guarantee 
+quality—it's necessary but not sufficient.
+
+\subsubsection{Mutation Score}
+
+A mutation score above 75\% is generally considered good, indicating that the test 
+suite successfully detects most injected faults \cite{jia2011analysis}.
+
+\subsection{Related Work}
+
+Previous studies on Spring PetClinic analysis:
+\begin{itemize}
+    \item [Reference relevant academic papers]
+    \item [Reference similar analysis projects]
+\end{itemize}
+
+\subsection{OWASP Top 10}
+
+The OWASP Top 10 \cite{owasp2021} represents the most critical security risks to 
+web applications. Our security analysis focuses on identifying these risks in the 
+PetClinic application.

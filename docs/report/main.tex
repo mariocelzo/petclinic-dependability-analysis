@@ -1,0 +1,189 @@
+\documentclass[12pt,a4paper]{article}
+
+% ============================================
+% PACKAGES
+% ============================================
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% ============================================
+% PAGE SETUP
+% ============================================
+\geometry{
+    a4paper,
+    left=2.5cm,
+    right=2.5cm,
+    top=3cm,
+    bottom=3cm
+}
+
+% ============================================
+% HEADER & FOOTER
+% ============================================
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{Spring PetClinic Dependability Analysis}
+\fancyhead[R]{\thepage}
+\fancyfoot[C]{\small Software Dependability - Academic Year 2025/2026}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% ============================================
+% CODE LISTINGS SETUP
+% ============================================
+\lstset{
+    basicstyle=\ttfamily\footnotesize,
+    breaklines=true,
+    frame=single,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!60!black},
+    stringstyle=\color{red},
+    showstringspaces=false,
+    captionpos=b
+}
+
+% ============================================
+% HYPERLINKS
+% ============================================
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+    citecolor=green,
+    pdftitle={Spring PetClinic Dependability Analysis},
+    pdfauthor={Mario Celzo},
+}
+
+% ============================================
+% TITLE PAGE DATA
+% ============================================
+\title{
+    \vspace{-2cm}
+    % \includegraphics[width=0.3\textwidth]{figures/university-logo.png}\\[1cm]
+    {\LARGE \textbf{Spring PetClinic}}\\[0.5cm]
+    {\Large Comprehensive Dependability Analysis}\\[0.3cm]
+    {\large Software Dependability Course}
+}
+
+\author{
+    \textbf{Author:}\\[0.3cm]
+    Mario Celzo\\[1cm]
+    \textbf{Repository:}\\
+    \url{https://github.com/mariocelzo/petclinic-dependability-analysis}\\[0.5cm]
+    \textbf{SonarCloud:}\\
+    \url{https://sonarcloud.io/project/overview?id=mariocelzo_petclinic-dependability-analysis}
+}
+
+\date{Academic Year 2025/2026\\[0.5cm] Last Update: 28 November 2025}
+
+% ============================================
+% DOCUMENT BEGIN
+% ============================================
+\begin{document}
+
+% Title page
+\maketitle
+\thispagestyle{empty}
+\newpage
+
+% Abstract
+\section*{Abstract}
+\addcontentsline{toc}{section}{Abstract}
+
+This report presents a comprehensive dependability analysis of the Spring PetClinic application, 
+a sample Spring Boot web application developed by the Spring Framework team. The analysis 
+encompasses multiple dimensions of software quality including static code analysis, test 
+coverage assessment, containerization, and CI/CD pipeline implementation.
+
+Using industry-standard tools such as SonarCloud, JaCoCo, Docker, and GitHub Actions, 
+we evaluated the software's dependability characteristics. Our findings indicate that 
+Spring PetClinic exhibits \textbf{excellent code quality} with:
+
+\begin{itemize}
+    \item \textbf{Triple-A SonarCloud rating} (Security: A, Reliability: A, Maintainability: A)
+    \item \textbf{91.9\% test coverage}, significantly exceeding the 80\% industry target
+    \item \textbf{Zero security vulnerabilities} and zero bugs detected
+    \item \textbf{Fully automated CI/CD pipeline} with Docker image deployment
+\end{itemize}
+
+The analysis also documents the challenges encountered during tool integration, 
+particularly the OWASP Dependency-Check NVD API authentication issue, and provides 
+detailed solutions for future reference.
+
+\textbf{Keywords:} Software Dependability, Code Coverage, Static Analysis, SonarCloud, 
+Docker, CI/CD, GitHub Actions, Spring Boot, Test Automation
+
+\newpage
+
+% Table of Contents
+\tableofcontents
+\newpage
+
+% List of Figures
+\listoffigures
+\newpage
+
+% List of Tables
+\listoftables
+\newpage
+
+% ============================================
+% MAIN SECTIONS (Include from separate files)
+% ============================================
+
+\input{sections/01-introduction}
+\input{sections/02-background}
+\input{sections/03-methodology}
+\input{sections/04-analysis}
+\input{sections/05-results}
+\input{sections/06-improvements}
+\input{sections/07-conclusions}
+
+% ============================================
+% BIBLIOGRAPHY
+% ============================================
+\newpage
+\bibliographystyle{plain}
+\bibliography{bibliography}
+
+% ============================================
+% APPENDICES
+% ============================================
+\newpage
+\appendix
+
+\section{Tool Configurations}
+\label{app:configs}
+
+\subsection{JaCoCo Configuration}
+\lstinputlisting[language=XML, caption=JaCoCo Maven Plugin Configuration]{../config/jacoco-config.xml}
+
+\subsection{PITest Configuration}
+\lstinputlisting[language=XML, caption=PITest Maven Plugin Configuration]{../config/pitest-config.xml}
+
+\section{Complete Metrics Tables}
+\label{app:metrics}
+
+[Include detailed metrics tables]
+
+\section{Security Vulnerability Details}
+\label{app:security}
+
+[Include full security scan results]
+
+\end{document}

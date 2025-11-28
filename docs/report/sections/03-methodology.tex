@@ -1,0 +1,255 @@
+\section{Methodology}
+\label{sec:methodology}
+
+\subsection{Analysis Approach}
+
+Our dependability analysis follows a systematic, multi-dimensional approach encompassing 
+nine evaluation criteria. Each criterion employs specific tools and methodologies to 
+assess different aspects of software quality.
+
+\subsection{Experimental Setup}
+
+\subsubsection{Environment}
+
+\begin{table}[h]
+\centering
+\caption{Experimental Environment}
+\label{tab:environment}
+\begin{tabular}{ll}
+\toprule
+\textbf{Component} & \textbf{Version/Specification} \\
+\midrule
+Operating System & macOS Sonoma / Ubuntu 22.04 (GitHub Actions) \\
+Java & Eclipse Temurin OpenJDK 21 \\
+Maven & 3.9.x (via Maven Wrapper) \\
+IDE & Visual Studio Code \\
+CI/CD & GitHub Actions \\
+Container Runtime & Docker Desktop / GitHub Actions \\
+Code Analysis & SonarCloud \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Project Repository}
+
+The analysis was conducted on a fork of the official Spring PetClinic repository:
+\begin{itemize}
+    \item Original: \url{https://github.com/spring-projects/spring-petclinic}
+    \item Analysis fork: \url{https://github.com/mariocelzo/petclinic-dependability-analysis}
+    \item SonarCloud: \url{https://sonarcloud.io/project/overview?id=mariocelzo_petclinic-dependability-analysis}
+    \item DockerHub: \url{https://hub.docker.com/r/mariocelzo/petclinic-dependability-analysis}
+\end{itemize}
+
+\subsection{Evaluation Criteria}
+
+\subsubsection{Criterion 1: CI/CD \& Build Automation}
+
+\textbf{Objective}: Establish automated build and testing pipeline
+
+\textbf{Method}:
+\begin{enumerate}
+    \item Configure GitHub Actions workflow
+    \item Define build, test, and analysis stages
+    \item Integrate quality gates
+    \item Verify cross-platform compatibility
+\end{enumerate}
+
+\textbf{Success Metrics}:
+\begin{itemize}
+    \item Build success rate: 100\%
+    \item Build time: < 5 minutes
+    \item All tests passing
+\end{itemize}
+
+\subsubsection{Criterion 2: Code Quality Analysis (SonarCloud)}
+
+\textbf{Objective}: Identify code quality issues through static analysis
+
+\textbf{Method}:
+\begin{enumerate}
+    \item Configure SonarCloud project
+    \item Execute initial analysis
+    \item Categorize issues:
+        \begin{itemize}
+            \item Bugs: Logic errors
+            \item Vulnerabilities: Security issues
+            \item Code Smells: Maintainability issues
+        \end{itemize}
+    \item Prioritize by severity
+    \item Fix critical and high-priority issues
+    \item Re-analyze to verify improvements
+\end{enumerate}
+
+\textbf{Metrics Collected}:
+\begin{itemize}
+    \item Total issues by type and severity
+    \item Technical debt (hours)
+    \item Code duplication percentage
+    \item Maintainability rating (A-F)
+\end{itemize}
+
+\subsubsection{Criterion 3 \& 4: Containerization}
+
+\textbf{Objective}: Create production-ready Docker image
+
+\textbf{Method}:
+\begin{enumerate}
+    \item Design multi-stage Dockerfile
+    \item Optimize for size and security
+    \item Build and test locally
+    \item Push to DockerHub
+    \item Verify public accessibility
+\end{enumerate}
+
+\textbf{Metrics}:
+\begin{itemize}
+    \item Image size
+    \item Build time
+    \item Container startup time
+\end{itemize}
+
+\subsubsection{Criterion 5: Test Coverage (JaCoCo)}
+
+\textbf{Objective}: Measure extent of code exercised by tests
+
+\textbf{Method}:
+\begin{enumerate}
+    \item Configure JaCoCo Maven plugin
+    \item Execute test suite with coverage tracking
+    \item Generate HTML and XML reports
+    \item Analyze coverage by package and class
+    \item Identify uncovered critical paths
+\end{enumerate}
+
+\textbf{Metrics}:
+\begin{itemize}
+    \item Line coverage (\%)
+    \item Branch coverage (\%)
+    \item Method coverage (\%)
+    \item Cyclomatic complexity
+\end{itemize}
+
+\subsubsection{Criterion 6: Mutation Testing (PITest)}
+
+\textbf{Objective}: Evaluate test suite effectiveness
+
+\textbf{Method}:
+\begin{enumerate}
+    \item Configure PITest plugin
+    \item Execute mutation campaign (estimated 10-15 minutes)
+    \item Analyze mutation operators:
+        \begin{itemize}
+            \item Conditionals boundary
+            \item Negate conditionals
+            \item Math mutator
+            \item Return values
+        \end{itemize}
+    \item Review survived mutants
+    \item Enhance tests to kill survived mutants
+    \item Re-run mutation testing
+\end{enumerate}
+
+\textbf{Calculation}:
+\begin{equation}
+\text{Mutation Score} = \frac{\text{Killed Mutants}}{\text{Total Mutants} - \text{Equivalent Mutants}} \times 100\%
+\end{equation}
+
+\subsubsection{Criterion 7: Performance Testing (JMH)}
+
+\textbf{Objective}: Establish performance baselines and identify bottlenecks
+
+\textbf{Method}:
+\begin{enumerate}
+    \item Identify critical components:
+        \begin{itemize}
+            \item Controllers (request handling)
+            \item Repositories (database operations)
+            \item Service layer (business logic)
+        \end{itemize}
+    \item Write JMH benchmarks
+    \item Configure benchmark parameters:
+        \begin{itemize}
+            \item Warmup iterations: 5
+            \item Measurement iterations: 10
+            \item Forks: 3
+        \end{itemize}
+    \item Execute benchmarks
+    \item Analyze results (throughput, latency)
+    \item Identify bottlenecks
+\end{enumerate}
+
+\textbf{Benchmark Modes}:
+\begin{description}
+    \item[Throughput] Operations per second
+    \item[Average Time] Average time per operation
+    \item[Sample Time] Distribution of execution times
+\end{description}
+
+\subsubsection{Criterion 8: Automated Test Generation}
+
+\textbf{Objective}: Fill coverage gaps using automated test generation
+
+\textbf{Method}:
+\begin{enumerate}
+    \item Identify classes with < 80\% coverage
+    \item Generate tests using EvoSuite:
+        \begin{itemize}
+            \item Time budget: 5 minutes per class
+            \item Search algorithm: DynaMOSA
+            \item Coverage criterion: Branch coverage
+        \end{itemize}
+    \item Review generated tests
+    \item Refine and improve tests:
+        \begin{itemize}
+            \item Rename meaningfully
+            \item Add assertions
+            \item Remove flaky tests
+        \end{itemize}
+    \item Integrate into test suite
+    \item Measure coverage improvement
+\end{enumerate}
+
+\subsubsection{Criterion 9: Security Analysis}
+
+\textbf{Objective}: Identify and remediate security vulnerabilities
+
+\textbf{Method}:
+\begin{enumerate}
+    \item \textbf{Dependency Analysis}:
+        \begin{itemize}
+            \item Run OWASP Dependency-Check
+            \item Identify CVEs in dependencies
+            \item Update vulnerable dependencies
+        \end{itemize}
+    \item \textbf{Code Analysis}:
+        \begin{itemize}
+            \item Run FindSecBugs
+            \item Review security patterns:
+                \begin{itemize}
+                    \item SQL Injection risks
+                    \item XSS vulnerabilities
+                    \item Insecure cryptography
+                    \item Path traversal
+                \end{itemize}
+        \end{itemize}
+    \item \textbf{Remediation}:
+        \begin{itemize}
+            \item Prioritize by CVSS score
+            \item Fix critical and high severity
+            \item Document mitigation strategies
+        \end{itemize}
+\end{enumerate}
+
+\subsection{Data Collection}
+
+For each criterion, we collected:
+\begin{itemize}
+    \item Quantitative metrics (coverage \%, scores, counts)
+    \item Qualitative observations (code quality, patterns)
+    \item Tool reports (HTML, XML, JSON)
+    \item Screenshots and visualizations
+\end{itemize}
+
+\subsection{Analysis Timeline}
+
+The analysis was conducted over 7 weeks following the project plan (see Appendix).

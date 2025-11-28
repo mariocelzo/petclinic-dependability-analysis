@@ -1,0 +1,222 @@
+\section{Conclusions}
+\label{sec:conclusions}
+
+\subsection{Summary}
+
+This project conducted a comprehensive dependability analysis of the Spring PetClinic 
+application, evaluating multiple quality criteria using industry-standard tools 
+and methodologies. The analysis demonstrates that Spring PetClinic is a well-engineered 
+application with excellent code quality metrics.
+
+\subsection{Key Findings}
+
+\subsubsection{Completed Achievements}
+
+The analysis successfully accomplished the following:
+
+\begin{enumerate}
+    \item \textbf{Established CI/CD Pipeline}: Three automated GitHub Actions workflows 
+    (CI, Docker, SonarCloud) ensure continuous quality monitoring with 100\% build success rate.
+    
+    \item \textbf{Verified Excellent Coverage}: 91.9\% test coverage significantly exceeds 
+    the 80\% industry target, with 44 tests all passing.
+    
+    \item \textbf{Confirmed Zero Vulnerabilities}: SonarCloud security analysis found 
+    no security vulnerabilities or bugs in the codebase.
+    
+    \item \textbf{Achieved Triple-A Rating}: SonarCloud Quality Gate passed with A ratings 
+    for Security, Reliability, and Maintainability.
+    
+    \item \textbf{Containerized Application}: Created production-ready Docker image 
+    with multi-stage build, non-root user, and health checks.
+    
+    \item \textbf{Automated Publishing}: Docker images automatically pushed to DockerHub 
+    with semantic tagging (latest, branch, commit SHA).
+    
+    \item \textbf{Documented Troubleshooting}: Comprehensive documentation of all challenges 
+    encountered and their solutions.
+\end{enumerate}
+
+\subsubsection{Quality Assessment}
+
+\begin{table}[h]
+\centering
+\caption{Final Quality Assessment (28 November 2025)}
+\label{tab:final-assessment}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Criterion} & \textbf{Target} & \textbf{Achieved} & \textbf{Status} \\
+\midrule
+CI/CD Pipeline & Pass & 100\% success & \checkmark \\
+Code Quality (SonarCloud) & A Grade & A Grade & \checkmark \\
+Docker Image & Published & On DockerHub & \checkmark \\
+Test Coverage & > 80\% & 91.9\% & \checkmark \\
+Security Vulnerabilities & 0 Critical & 0 Found & \checkmark \\
+Bugs & 0 & 0 Found & \checkmark \\
+Code Smells & < 50 & 23 (Minor) & \checkmark \\
+Duplications & < 3\% & 0.0\% & \checkmark \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Challenges and Solutions}
+
+The project encountered several technical challenges that provided valuable learning experiences:
+
+\begin{enumerate}
+    \item \textbf{Java Version Mismatch}: Project required Java 21, resolved by installing 
+    Eclipse Temurin distribution and configuring environment variables.
+    
+    \item \textbf{OWASP Dependency-Check Failure}: NVD API now requires authentication 
+    (since December 2023). Resolved by skipping the check in CI and relying on SonarCloud's 
+    security analysis.
+    
+    \item \textbf{SonarCloud Authorization}: Required adding \texttt{sonar.organization} 
+    property to \texttt{pom.xml}.
+    
+    \item \textbf{GitHub Actions Debugging}: CI failures with truncated logs required 
+    local reproduction to identify root causes.
+\end{enumerate}
+
+\subsection{Lessons Learned}
+
+\subsubsection{Technical Insights}
+
+\begin{enumerate}
+    \item \textbf{Local Testing is Essential}: Always reproduce CI failures locally to see 
+    complete error messages.
+    
+    \item \textbf{External Dependencies Change}: NVD API authentication requirement shows 
+    that external service dependencies can break without warning.
+    
+    \item \textbf{SonarCloud Provides Comprehensive Analysis}: A single tool can assess 
+    security, reliability, maintainability, coverage, and duplications.
+    
+    \item \textbf{Multi-stage Docker Builds}: Separating build and runtime stages produces 
+    smaller, more secure images.
+    
+    \item \textbf{Documentation Value}: Detailed troubleshooting documentation saves time 
+    when similar issues arise.
+\end{enumerate}
+
+\subsubsection{Process Insights}
+
+\begin{enumerate}
+    \item \textbf{Early Integration}: Integrating analysis tools into CI/CD early prevents 
+    quality regression.
+    
+    \item \textbf{Incremental Improvement}: Fixing issues incrementally is more manageable 
+    than addressing everything at once.
+    
+    \item \textbf{Documentation Importance}: Comprehensive documentation of rationale for 
+    fixes aids future maintainers.
+    
+    \item \textbf{Time Estimation}: Analysis tasks take longer than expected. PITest 
+    execution, test generation review, and manual fixes consumed significant time.
+\end{enumerate}
+
+\subsection{Limitations}
+
+\subsubsection{Scope Limitations}
+
+\begin{itemize}
+    \item \textbf{Application Size}: Small application may not expose issues present in 
+    larger systems
+    
+    \item \textbf{Load Testing}: Did not perform comprehensive load/stress testing
+    
+    \item \textbf{User Acceptance}: Focused on technical quality, not user experience
+    
+    \item \textbf{Production Environment}: Analysis conducted in development environment
+\end{itemize}
+
+\subsubsection{Methodological Limitations}
+
+\begin{itemize}
+    \item \textbf{Tool Accuracy}: Automated tools may produce false positives/negatives
+    
+    \item \textbf{Metric Selection}: Chosen metrics may not capture all quality aspects
+    
+    \item \textbf{Generalizability}: Results specific to Spring Boot/Java ecosystem
+\end{itemize}
+
+\subsection{Future Work}
+
+\subsubsection{Short-term Extensions}
+
+\begin{enumerate}
+    \item \textbf{Frontend Testing}: Add Selenium/Cypress tests for UI coverage
+    
+    \item \textbf{Integration Testing}: Expand integration test suite for controller-service-repository flow
+    
+    \item \textbf{Load Testing}: Conduct JMeter/Gatling load tests
+    
+    \item \textbf{Chaos Engineering}: Test resilience under failure scenarios
+\end{enumerate}
+
+\subsubsection{Long-term Research Directions}
+
+\begin{enumerate}
+    \item \textbf{ML-based Test Generation}: Investigate machine learning approaches 
+    for smarter test generation
+    
+    \item \textbf{Continuous Monitoring}: Implement runtime monitoring in production
+    
+    \item \textbf{Comparative Studies}: Compare results across different Spring Boot 
+    applications
+    
+    \item \textbf{Cost-Benefit Analysis}: Quantify ROI of different testing strategies
+\end{enumerate}
+
+\subsection{Recommendations}
+
+\subsubsection{For Project Teams}
+
+\begin{enumerate}
+    \item Integrate analysis tools early in development lifecycle
+    \item Set quality gates in CI/CD pipeline
+    \item Prioritize mutation testing over just coverage
+    \item Regular security scanning (weekly/monthly)
+    \item Review and refine generated tests
+\end{enumerate}
+
+\subsubsection{For Tool Users}
+
+\begin{enumerate}
+    \item \textbf{JaCoCo}: Focus on branch coverage, not just line coverage
+    \item \textbf{PITest}: Start with critical packages, expand gradually
+    \item \textbf{JMH}: Isolate benchmarks, use adequate warmup
+    \item \textbf{EvoSuite}: Treat as supplement, not replacement for manual tests
+    \item \textbf{OWASP}: Automate scans, update dependencies regularly
+\end{enumerate}
+
+\subsection{Final Remarks}
+
+Software dependability is multidimensional and requires systematic evaluation across 
+multiple quality attributes. This project demonstrated that:
+
+\begin{itemize}
+    \item Automated tools enable comprehensive analysis at scale
+    \item Combining multiple tools provides complementary insights
+    \item Continuous improvement requires both automation and human judgment
+    \item Documentation and reproducibility are essential for long-term value
+\end{itemize}
+
+The techniques and findings from this analysis are applicable beyond Spring PetClinic 
+to other Spring Boot applications and, with appropriate tool selection, to software 
+projects in general.
+
+\vspace{1cm}
+
+\noindent\textbf{Project Repository}:  
+\url{https://github.com/YOUR_USERNAME/petclinic-dependability-analysis}
+
+\vspace{0.5cm}
+
+\noindent\textbf{DockerHub Image}:  
+\url{https://hub.docker.com/r/YOUR_DOCKERHUB/petclinic-dependability}
+
+\vspace{0.5cm}
+
+\noindent\textbf{SonarCloud Dashboard}:  
+\url{https://sonarcloud.io/dashboard?id=YOUR_PROJECT}

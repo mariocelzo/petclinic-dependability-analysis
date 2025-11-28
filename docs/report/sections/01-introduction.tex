@@ -1,0 +1,91 @@
+\section{Introduction}
+\label{sec:introduction}
+
+\subsection{Motivation}
+
+Software dependability is a critical aspect of modern software engineering, encompassing 
+reliability, availability, safety, security, and maintainability \cite{avizienis2004basic}. 
+As software systems become increasingly complex and integral to critical operations, ensuring 
+their dependability becomes paramount.
+
+This project aims to conduct a comprehensive dependability analysis of the Spring PetClinic 
+application, evaluating various quality dimensions through automated analysis tools and 
+systematic testing approaches.
+
+\subsection{Project Goals}
+
+The primary objectives of this analysis are:
+
+\begin{enumerate}
+    \item \textbf{Evaluate Code Quality}: Assess the codebase using static analysis tools 
+    to identify bugs, vulnerabilities, and code smells.
+    
+    \item \textbf{Measure Test Coverage}: Determine the extent to which the existing test 
+    suite exercises the application code using coverage analysis.
+    
+    \item \textbf{Assess Test Quality}: Evaluate the effectiveness of the test suite through 
+    mutation testing to identify weak spots.
+    
+    \item \textbf{Analyze Performance}: Establish performance baselines and identify bottlenecks 
+    using microbenchmarking techniques.
+    
+    \item \textbf{Identify Security Vulnerabilities}: Scan for known vulnerabilities in 
+    dependencies and security issues in code.
+    
+    \item \textbf{Improve Test Coverage}: Generate additional tests automatically to fill 
+    coverage gaps.
+    
+    \item \textbf{Document Findings}: Provide comprehensive documentation of analysis results 
+    and improvement recommendations.
+\end{enumerate}
+
+\subsection{Application Under Analysis}
+
+\textbf{Spring PetClinic} is a sample Spring Boot application designed to demonstrate the 
+capabilities of the Spring Framework. It implements a simple veterinary clinic management 
+system with the following features:
+
+\begin{itemize}
+    \item Owner and pet management
+    \item Veterinarian information
+    \item Visit scheduling
+    \item Pet type categorization
+\end{itemize}
+
+The application serves as an excellent subject for dependability analysis due to:
+
+\begin{itemize}
+    \item \textbf{Realistic complexity}: Contains typical web application patterns
+    \item \textbf{Active maintenance}: Regularly updated by the Spring team
+    \item \textbf{Comprehensive features}: Includes database interaction, validation, and MVC architecture
+    \item \textbf{Existing test suite}: 44 tests providing baseline for comparison
+\end{itemize}
+
+\subsection{Technology Stack}
+
+The application utilizes the following technologies (as analyzed in this project):
+
+\begin{itemize}
+    \item \textbf{Framework}: Spring Boot 4.0.0-SNAPSHOT
+    \item \textbf{Language}: Java 21 (Eclipse Temurin)
+    \item \textbf{Database}: H2 (in-memory for development/testing)
+    \item \textbf{Build Tool}: Maven 3.9+ (via Maven Wrapper)
+    \item \textbf{Testing}: JUnit 5, Mockito, Spring Boot Test
+    \item \textbf{Web}: Spring MVC, Thymeleaf
+    \item \textbf{CI/CD}: GitHub Actions
+    \item \textbf{Containerization}: Docker (multi-stage build)
+    \item \textbf{Code Analysis}: SonarCloud
+\end{itemize}
+
+\subsection{Report Structure}
+
+This report is organized as follows:
+
+\begin{description}
+    \item[Chapter 2] provides background on dependability concepts and analysis tools
+    \item[Chapter 3] describes the methodology employed in this analysis
+    \item[Chapter 4] presents detailed analysis results for each evaluation criterion
+    \item[Chapter 5] discusses the findings and their implications
+    \item[Chapter 6] documents improvements implemented and their impact
+    \item[Chapter 7] concludes with lessons learned and future work
+\end{description}

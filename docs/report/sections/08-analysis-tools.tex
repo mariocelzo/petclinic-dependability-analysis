@@ -1,0 +1,690 @@
+\section{Strumenti di Analisi e Configurazione}
+\label{sec:analysis-tools}
+
+Questa sezione descrive in dettaglio gli strumenti di analisi utilizzati nel progetto, la loro configurazione e la struttura organizzativa della directory \texttt{analysis/}.
+
+\subsection{Architettura della Directory di Analisi}
+\label{subsec:analysis-structure}
+
+La directory \texttt{analysis/} è organizzata in sei sottocartelle tematiche, ognuna dedicata a un aspetto specifico dell'analisi di dependability:
+
+\begin{lstlisting}[language=bash, caption={Struttura directory analysis/}]
+analysis/
+├── 01-sonarcloud/          # Analisi qualità codice
+├── 02-coverage/            # Analisi copertura test
+├── 03-mutation/            # Mutation testing
+├── 04-performance/         # Analisi performance
+├── 05-security/            # Analisi sicurezza
+└── 06-test-generation/     # Generazione test automatici
+\end{lstlisting}
+
+\subsection{01 - SonarCloud: Analisi Qualità del Codice}
+\label{subsec:sonarcloud}
+
+\subsubsection{Descrizione dello Strumento}
+SonarCloud è una piattaforma di analisi statica del codice cloud-based che identifica:
+\begin{itemize}
+    \item \textbf{Bug}: Errori nel codice che possono causare comportamenti inattesi
+    \item \textbf{Vulnerabilità}: Problemi di sicurezza che espongono il sistema ad attacchi
+    \item \textbf{Code Smells}: Violazioni delle best practices che riducono la manutenibilità
+    \item \textbf{Duplicazioni}: Codice duplicato che aumenta il debito tecnico
+    \item \textbf{Coverage Gap}: Aree del codice non coperte da test
+\end{itemize}
+
+\subsubsection{File di Configurazione}
+Il file \texttt{sonar-project.properties} nella root del progetto contiene:
+
+\begin{lstlisting}[language=properties, caption={sonar-project.properties}]
+# Identificazione progetto
+sonar.projectKey=mariocelzo_petclinic-dependability-analysis
+sonar.organization=mariocelzo
+
+# Informazioni progetto
+sonar.projectName=Spring PetClinic Dependability Analysis
+sonar.projectVersion=1.0
+
+# Percorsi sorgenti e test
+sonar.sources=src/main/java
+sonar.tests=src/test/java
+
+# Esclusioni
+sonar.exclusions=**/target/**,**/node_modules/**
+
+# Java version
+sonar.java.source=21
+sonar.java.binaries=target/classes
+
+# Coverage report
+sonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+
+# Mutation testing (PITest)
+sonar.pitest.mode=reuseReport
+sonar.pitest.reportsDirectory=target/pit-reports
+\end{lstlisting}
+
+\subsubsection{Metriche Chiave Monitorate}
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|p{6cm}|}
+\hline
+\textbf{Metrica} & \textbf{Soglia} & \textbf{Descrizione} \\
+\hline
+Reliability Rating & A & Numero di bug per 1000 righe di codice \\
+Security Rating & A & Numero di vulnerabilità critiche \\
+Maintainability Rating & A & Rapporto debito tecnico/tempo sviluppo \\
+Coverage & \textgreater 80\% & Percentuale codice coperto da test \\
+Duplications & \textless 3\% & Percentuale codice duplicato \\
+\hline
+\end{tabular}
+\caption{Metriche SonarCloud e soglie di qualità}
+\label{tab:sonarcloud-metrics}
+\end{table}
+
+\subsubsection{Contenuto Directory}
+\begin{itemize}
+    \item \texttt{README.md}: Guida all'uso di SonarCloud e interpretazione metriche
+    \item \texttt{issues-report.md}: Report dettagliato delle issue trovate (bug, vulnerabilità, code smells)
+    \item \texttt{screenshots/}: Screenshot dell'interfaccia SonarCloud con dashboard metriche
+\end{itemize}
+
+\subsection{02 - Coverage: Analisi Copertura Test}
+\label{subsec:coverage}
+
+\subsubsection{Descrizione dello Strumento}
+JaCoCo (Java Code Coverage) è uno strumento di analisi della copertura del codice che misura:
+\begin{itemize}
+    \item \textbf{Line Coverage}: Percentuale di righe eseguite dai test
+    \item \textbf{Branch Coverage}: Percentuale di branch decisionali testati
+    \item \textbf{Method Coverage}: Percentuale di metodi invocati
+    \item \textbf{Class Coverage}: Percentuale di classi istanziate
+    \item \textbf{Instruction Coverage}: Percentuale di bytecode eseguito
+\end{itemize}
+
+\subsubsection{Configurazione Maven Plugin}
+Nel file \texttt{pom.xml}, il plugin JaCoCo è configurato come segue:
+
+\begin{lstlisting}[language=xml, caption={Configurazione JaCoCo in pom.xml}]
+<plugin>
+    <groupId>org.jacoco</groupId>
+    <artifactId>jacoco-maven-plugin</artifactId>
+    <version>0.8.10</version>
+    <executions>
+        <execution>
+            <goals>
+                <goal>prepare-agent</goal>
+            </goals>
+        </execution>
+        <execution>
+            <id>report</id>
+            <phase>test</phase>
+            <goals>
+                <goal>report</goal>
+            </goals>
+        </execution>
+        <execution>
+            <id>jacoco-check</id>
+            <goals>
+                <goal>check</goal>
+            </goals>
+            <configuration>
+                <rules>
+                    <rule>
+                        <element>PACKAGE</element>
+                        <limits>
+                            <limit>
+                                <counter>LINE</counter>
+                                <value>COVEREDRATIO</value>
+                                <minimum>0.80</minimum>
+                            </limit>
+                        </limits>
+                    </rule>
+                </rules>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+\end{lstlisting}
+
+\subsubsection{Comando di Esecuzione}
+\begin{lstlisting}[language=bash]
+# Esegue test e genera report coverage
+./mvnw clean test jacoco:report
+
+# Il report HTML è generato in:
+# target/site/jacoco/index.html
+\end{lstlisting}
+
+\subsubsection{Contenuto Directory}
+\begin{itemize}
+    \item \texttt{README.md}: Documentazione uso JaCoCo e interpretazione metriche
+    \item \texttt{coverage-analysis.md}: Analisi dettagliata della copertura per package, identificazione gap critici
+    \item \texttt{graphs/}: Grafici evoluzione copertura nel tempo (line chart, heatmap per package)
+\end{itemize}
+
+\subsection{03 - Mutation: Mutation Testing}
+\label{subsec:mutation}
+
+\subsubsection{Descrizione dello Strumento}
+PITest (PIT Mutation Testing) è uno strumento che valuta la qualità dei test introducendo mutazioni nel codice:
+
+\begin{enumerate}
+    \item \textbf{Mutazione}: Modifica intenzionale del codice sorgente (es: \texttt{>} diventa \texttt{>=})
+    \item \textbf{Esecuzione Test}: I test vengono eseguiti contro il codice mutato
+    \item \textbf{Risultato}:
+    \begin{itemize}
+        \item \textbf{KILLED}: Test fallisce → Test efficace (buono)
+        \item \textbf{SURVIVED}: Test passa → Test debole (da migliorare)
+        \item \textbf{NO\_COVERAGE}: Mutazione in codice non coperto
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{Tipi di Mutazioni Applicate}
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Mutatore} & \textbf{Mutazione} & \textbf{Esempio} \\
+\hline
+CONDITIONALS\_BOUNDARY & Modifica condizioni & \texttt{<} → \texttt{<=} \\
+INCREMENTS & Inverte incrementi & \texttt{i++} → \texttt{i--} \\
+INVERT\_NEGS & Inverte negazioni & \texttt{-x} → \texttt{+x} \\
+MATH & Modifica operatori & \texttt{+} → \texttt{-} \\
+NEGATE\_CONDITIONALS & Nega condizioni & \texttt{==} → \texttt{!=} \\
+VOID\_METHOD\_CALLS & Rimuove chiamate void & \texttt{method()} → \texttt{//} \\
+RETURN\_VALS & Modifica return & \texttt{return true} → \texttt{return false} \\
+\hline
+\end{tabular}
+\caption{Principali mutatori PITest}
+\label{tab:pitest-mutators}
+\end{table}
+
+\subsubsection{Configurazione Maven Plugin}
+\begin{lstlisting}[language=xml, caption={Configurazione PITest in pom.xml}]
+<plugin>
+    <groupId>org.pitest</groupId>
+    <artifactId>pitest-maven</artifactId>
+    <version>1.14.2</version>
+    <dependencies>
+        <dependency>
+            <groupId>org.pitest</groupId>
+            <artifactId>pitest-junit5-plugin</artifactId>
+            <version>1.2.0</version>
+        </dependency>
+    </dependencies>
+    <configuration>
+        <targetClasses>
+            <param>org.springframework.samples.petclinic.*</param>
+        </targetClasses>
+        <targetTests>
+            <param>org.springframework.samples.petclinic.*</param>
+        </targetTests>
+        <outputFormats>
+            <outputFormat>HTML</outputFormat>
+            <outputFormat>XML</outputFormat>
+        </outputFormats>
+        <mutationThreshold>70</mutationThreshold>
+        <coverageThreshold>80</coverageThreshold>
+        <threads>4</threads>
+        <timestampedReports>false</timestampedReports>
+    </configuration>
+</plugin>
+\end{lstlisting}
+
+\subsubsection{Comando di Esecuzione}
+\begin{lstlisting}[language=bash]
+# Esegue mutation testing (10-15 minuti)
+./mvnw pitest:mutationCoverage
+
+# Report HTML generato in:
+# target/pit-reports/index.html
+\end{lstlisting}
+
+\subsubsection{Metriche Mutation Score}
+Il \textbf{Mutation Score} è calcolato come:
+\[
+\text{Mutation Score} = \frac{\text{Mutazioni KILLED}}{\text{Mutazioni Totali - NO\_COVERAGE}} \times 100
+\]
+
+\begin{itemize}
+    \item \textbf{\textgreater 80\%}: Eccellente - Test molto robusti
+    \item \textbf{60-80\%}: Buono - Test adeguati con margini di miglioramento
+    \item \textbf{40-60\%}: Sufficiente - Test base ma con lacune significative
+    \item \textbf{\textless 40\%}: Insufficiente - Test deboli, necessari miglioramenti urgenti
+\end{itemize}
+
+\subsubsection{Contenuto Directory}
+\begin{itemize}
+    \item \texttt{README.md}: Guida mutation testing e interpretazione risultati
+    \item \texttt{mutation-analysis.md}: Analisi dettagliata mutation score per package e classe
+    \item \texttt{weak-spots.md}: Identificazione punti deboli con mutazioni sopravvissute e raccomandazioni per test migliorati
+    \item \texttt{reports/}: Report HTML/XML PITest per reference
+\end{itemize}
+
+\subsection{04 - Performance: Analisi Performance}
+\label{subsec:performance}
+
+\subsubsection{Descrizione dello Strumento}
+L'analisi delle performance utilizza JMeter per test di carico e profiling con VisualVM/JProfiler:
+
+\begin{itemize}
+    \item \textbf{JMeter}: Test di carico HTTP con simulazione utenti concorrenti
+    \item \textbf{VisualVM}: Profiling CPU, memoria, thread
+    \item \textbf{Spring Boot Actuator}: Metriche runtime applicazione
+\end{itemize}
+
+\subsubsection{Scenari di Test}
+\begin{enumerate}
+    \item \textbf{Baseline}: 10 utenti, 100 richieste, measure baseline response time
+    \item \textbf{Load Test}: 50 utenti, 500 richieste, verifica performance sotto carico normale
+    \item \textbf{Stress Test}: 100+ utenti, 1000+ richieste, identifica breaking point
+    \item \textbf{Endurance Test}: 20 utenti, 2 ore, verifica memory leaks
+\end{enumerate}
+
+\subsubsection{Metriche Monitorate}
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Metrica} & \textbf{Soglia Accettabile} & \textbf{Descrizione} \\
+\hline
+Response Time (avg) & \textless 200ms & Tempo medio risposta \\
+Response Time (p95) & \textless 500ms & 95° percentile tempo risposta \\
+Response Time (p99) & \textless 1000ms & 99° percentile tempo risposta \\
+Throughput & \textgreater 100 req/s & Richieste elaborate per secondo \\
+Error Rate & \textless 1\% & Percentuale richieste fallite \\
+CPU Usage & \textless 70\% & Utilizzo CPU medio \\
+Memory Usage & \textless 80\% & Utilizzo memoria heap \\
+\hline
+\end{tabular}
+\caption{Metriche performance e soglie}
+\label{tab:performance-metrics}
+\end{table}
+
+\subsubsection{Contenuto Directory}
+\begin{itemize}
+    \item \texttt{README.md}: Guida setup JMeter e esecuzione test performance
+    \item \texttt{performance-analysis.md}: Analisi dettagliata risultati per scenario
+    \item \texttt{bottlenecks.md}: Identificazione colli di bottiglia (query lente, N+1 problems, memory leaks) e ottimizzazioni proposte
+    \item \texttt{results/}: File JTL JMeter, grafici response time, CPU/memory profiling
+\end{itemize}
+
+\subsection{05 - Security: Analisi Sicurezza}
+\label{subsec:security}
+
+\subsubsection{Strumenti di Analisi}
+L'analisi di sicurezza utilizza un approccio multi-layer con quattro strumenti complementari:
+
+\paragraph{OWASP Dependency-Check}
+Scansiona le dipendenze Maven per vulnerabilità note (CVE):
+\begin{lstlisting}[language=bash]
+./mvnw dependency-check:check
+# Report: target/dependency-check-report.html
+\end{lstlisting}
+
+\paragraph{SpotBugs + FindSecBugs}
+Analisi statica per pattern di sicurezza problematici:
+\begin{itemize}
+    \item SQL Injection
+    \item XSS (Cross-Site Scripting)
+    \item Path Traversal
+    \item Weak Cryptography
+    \item Insecure Random
+\end{itemize}
+
+Configurazione in \texttt{spotbugs-security.xml}:
+\begin{lstlisting}[language=xml, caption={spotbugs-security.xml - Filtri Security}]
+<FindBugsFilter>
+    <!-- Include tutti i security bug patterns -->
+    <Match>
+        <Bug category="SECURITY"/>
+    </Match>
+    
+    <!-- Esclusioni per false positive -->
+    <Match>
+        <Class name="~.*\.Test.*"/>
+        <Bug pattern="SQL_INJECTION_JDBC"/>
+    </Match>
+</FindBugsFilter>
+\end{lstlisting}
+
+\paragraph{GitHub CodeQL}
+Analisi semantica del codice per identificare:
+\begin{itemize}
+    \item Command Injection
+    \item LDAP Injection
+    \item Unsafe Deserialization
+    \item Hardcoded Credentials
+\end{itemize}
+
+\paragraph{Trivy}
+Scansione vulnerabilità container Docker:
+\begin{lstlisting}[language=bash]
+trivy image petclinic:latest
+\end{lstlisting}
+
+\subsubsection{Configurazione File dependency-check-suppressions.xml}
+File utilizzato per sopprimere false positive:
+\begin{lstlisting}[language=xml, caption={dependency-check-suppressions.xml}]
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+    <!-- Esempio: Soppressione CVE già fixata in versione specifica -->
+    <suppress>
+        <notes>CVE fixata in Spring Boot 4.0.0-M3</notes>
+        <cve>CVE-2023-XXXXX</cve>
+    </suppress>
+</suppressions>
+\end{lstlisting}
+
+\subsubsection{Contenuto Directory}
+\begin{itemize}
+    \item \texttt{README.md}: Guida esecuzione analisi sicurezza multi-tool
+    \item \texttt{security-assessment.md}: Report completo vulnerabilità trovate categorizzate per OWASP Top 10, severity rating (Critical/High/Medium/Low), remediation plan
+    \item \texttt{reports/}: Report HTML/JSON dei vari tool (OWASP, SpotBugs, CodeQL, Trivy)
+\end{itemize}
+
+\subsection{06 - Test Generation: Generazione Test Automatici}
+\label{subsec:test-generation}
+
+\subsubsection{Descrizione dello Strumento}
+Utilizzo di strumenti di generazione automatica test per migliorare coverage:
+
+\begin{itemize}
+    \item \textbf{EvoSuite}: Generazione test basata su algoritmi genetici
+    \item \textbf{Randoop}: Generazione test randomici con feedback
+    \item \textbf{GitHub Copilot}: Suggerimenti test assistiti da AI
+\end{itemize}
+
+\subsubsection{EvoSuite - Approccio Genetico}
+EvoSuite usa algoritmi evolutivi per generare test che massimizzano coverage:
+
+\begin{lstlisting}[language=bash]
+# Genera test per una classe specifica
+java -jar evosuite.jar \
+  -class org.springframework.samples.petclinic.owner.OwnerController \
+  -projectCP target/classes \
+  -Dsearch_budget=120
+\end{lstlisting}
+
+Parametri chiave:
+\begin{itemize}
+    \item \texttt{search\_budget}: Tempo in secondi per generazione (default: 60)
+    \item \texttt{criterion}: Criterio di coverage (BRANCH, LINE, MUTATION)
+    \item \texttt{test\_dir}: Directory output test generati
+\end{itemize}
+
+\subsubsection{Processo di Validazione Test Generati}
+\begin{enumerate}
+    \item \textbf{Generazione}: Tool produce test automatici
+    \item \textbf{Review}: Analisi manuale per validità semantica
+    \item \textbf{Refactoring}: Pulizia e miglioramento leggibilità
+    \item \textbf{Integration}: Integrazione nella suite di test esistente
+    \item \textbf{Maintenance}: Verifica test non diventino flaky
+\end{enumerate}
+
+\subsubsection{Metriche di Valutazione}
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Metrica} & \textbf{Descrizione} \\
+\hline
+Coverage Improvement & Delta coverage prima/dopo generazione \\
+Test Validity Rate & \% test generati semanticamente corretti \\
+Assertion Quality & Numero asserzioni significative per test \\
+Flakiness Rate & \% test instabili (fail intermittenti) \\
+Maintenance Cost & Effort necessario per manutenzione test \\
+\hline
+\end{tabular}
+\caption{Metriche valutazione test generati}
+\label{tab:test-generation-metrics}
+\end{table}
+
+\subsubsection{Contenuto Directory}
+\begin{itemize}
+    \item \texttt{README.md}: Guida uso EvoSuite/Randoop e best practices
+    \item \texttt{generation-report.md}: Report dettagliato test generati per classe, coverage improvement, analisi qualità asserzioni, identificazione test da mantenere vs scartare
+    \item \texttt{generated-tests/}: Test generati organizzati per package, prima della review/refactoring
+\end{itemize}
+
+\subsection{Workflow di Analisi Completo}
+\label{subsec:analysis-workflow}
+
+Il workflow completo di analisi segue questo ordine:
+
+\begin{enumerate}
+    \item \textbf{Setup Iniziale}: Copia file configurazione, aggiunta plugin Maven
+    \item \textbf{Baseline Coverage}: Esegui \texttt{./mvnw test jacoco:report} per baseline
+    \item \textbf{Mutation Testing}: Esegui \texttt{./mvnw pitest:mutationCoverage} (10-15 min)
+    \item \textbf{Static Analysis}: Push su GitHub → trigger workflow quality.yml con SonarCloud
+    \item \textbf{Security Scan}: Workflow security.yml esegue OWASP + SpotBugs + CodeQL
+    \item \textbf{Performance Test}: Esegui test JMeter, raccogli metriche
+    \item \textbf{Test Generation}: Genera test con EvoSuite per classi con bassa coverage
+    \item \textbf{Iterazione}: Re-run coverage e mutation per verificare miglioramenti
+    \item \textbf{Documentation}: Popola directory analysis/ con report e analisi
+\end{enumerate}
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[node distance=1.5cm, auto]
+    % Definizione stili
+    \tikzstyle{process} = [rectangle, draw, fill=blue!20, text width=3cm, text centered, rounded corners, minimum height=1cm]
+    \tikzstyle{decision} = [diamond, draw, fill=green!20, text width=2cm, text centered, minimum height=1cm]
+    \tikzstyle{arrow} = [thick,->,>=stealth]
+    
+    % Nodi
+    \node [process] (setup) {Setup Iniziale};
+    \node [process, below of=setup] (coverage) {Baseline Coverage};
+    \node [process, below of=coverage] (mutation) {Mutation Testing};
+    \node [process, below of=mutation] (static) {Static Analysis};
+    \node [process, below of=static] (security) {Security Scan};
+    \node [decision, below of=security] (check) {Issues Found?};
+    \node [process, left of=check, xshift=-3cm] (fix) {Fix Issues};
+    \node [process, below of=check, yshift=-1cm] (performance) {Performance Test};
+    \node [process, below of=performance] (generation) {Test Generation};
+    \node [process, below of=generation] (document) {Documentation};
+    
+    % Collegamenti
+    \draw [arrow] (setup) -- (coverage);
+    \draw [arrow] (coverage) -- (mutation);
+    \draw [arrow] (mutation) -- (static);
+    \draw [arrow] (static) -- (security);
+    \draw [arrow] (security) -- (check);
+    \draw [arrow] (check) -- node {Yes} (fix);
+    \draw [arrow] (fix) |- (coverage);
+    \draw [arrow] (check) -- node {No} (performance);
+    \draw [arrow] (performance) -- (generation);
+    \draw [arrow] (generation) -- (document);
+\end{tikzpicture}
+\caption{Workflow di analisi dependability}
+\label{fig:analysis-workflow}
+\end{figure}
+
+\subsection{Integrazione con CI/CD}
+\label{subsec:cicd-integration}
+
+I workflow GitHub Actions nella directory \texttt{.github/workflows/} automatizzano le analisi:
+
+\subsubsection{build.yml - Build e Test Base}
+\begin{lstlisting}[language=yaml, caption={.github/workflows/build.yml}]
+name: Build and Test
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+      - name: Build with Maven
+        run: ./mvnw clean install
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: target/surefire-reports/
+\end{lstlisting}
+
+\subsubsection{quality.yml - Analisi Qualità}
+Esegue SonarCloud, JaCoCo coverage, PITest mutation testing:
+\begin{itemize}
+    \item Trigger: Push su main/develop, Pull Request
+    \item Durata: ~15-20 minuti
+    \item Artifacts: Coverage report, mutation report, SonarCloud dashboard
+\end{itemize}
+
+\subsubsection{security.yml - Analisi Sicurezza}
+Esegue OWASP Dependency-Check, SpotBugs+FindSecBugs, CodeQL, Trivy:
+\begin{itemize}
+    \item Trigger: Push su main, schedule (weekly)
+    \item Durata: ~10-15 minuti
+    \item Artifacts: Security reports, vulnerability list
+    \item Blocca build se vulnerabilità Critical/High
+\end{itemize}
+
+\subsubsection{docker.yml - Build e Push Container}
+Build immagine Docker, scan con Trivy, push su DockerHub:
+\begin{itemize}
+    \item Trigger: Push tag (es: v1.0.0), manual workflow\_dispatch
+    \item Durata: ~5-8 minuti
+    \item Output: Immagine su DockerHub con tag versione e latest
+\end{itemize}
+
+\subsection{Best Practices e Raccomandazioni}
+\label{subsec:best-practices}
+
+\subsubsection{Frequenza Esecuzione Analisi}
+\begin{itemize}
+    \item \textbf{Coverage}: Ad ogni commit (veloce, 2-3 minuti)
+    \item \textbf{Mutation}: Daily/prima di merge PR (lento, 10-15 minuti)
+    \item \textbf{Static Analysis}: Ad ogni push (integrato in CI)
+    \item \textbf{Security Scan}: Weekly + prima di release
+    \item \textbf{Performance Test}: Prima di release + quando cambiano query/logica
+\end{itemize}
+
+\subsubsection{Gestione False Positive}
+\begin{enumerate}
+    \item \textbf{Documenta}: Spiega perché un issue è false positive
+    \item \textbf{Sopprimi}: Usa file suppressions (dependency-check, spotbugs)
+    \item \textbf{Configura}: Ajusta thresholds se troppo stringenti
+    \item \textbf{Review}: Periodicamente re-valuta suppressions (potrebbero diventare veri issue)
+\end{enumerate}
+
+\subsubsection{Interpretazione Risultati}
+\begin{itemize}
+    \item \textbf{Non inseguire 100\%}: Coverage 80-85\% è ottimale (diminishing returns dopo)
+    \item \textbf{Priorità}: Focus su codice critico (business logic, security, persistenza)
+    \item \textbf{Trend}: Monitora evoluzione metriche nel tempo, non solo valore assoluto
+    \item \textbf{Contestualizza}: Confronta con benchmark progetti simili
+\end{itemize}
+
+\subsection{Checkstyle: Analisi Code Style}
+\label{subsec:checkstyle}
+
+\subsubsection{Descrizione dello Strumento}
+Checkstyle verifica conformità codice a standard di stile configurabili:
+
+\begin{itemize}
+    \item \textbf{Naming Conventions}: Nomi variabili, metodi, classi
+    \item \textbf{Formatting}: Indentazione, spazi, parentesi
+    \item \textbf{Javadoc}: Completezza documentazione
+    \item \textbf{Design}: Numero parametri, complessità ciclomatica
+    \item \textbf{Imports}: Ordine e wildcard imports
+\end{itemize}
+
+\subsubsection{File di Configurazione}
+Il file \texttt{checkstyle.xml} nella root definisce le regole:
+
+\begin{lstlisting}[language=xml, caption={checkstyle.xml - Regole principali}]
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+  "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+  "https://checkstyle.org/dtds/configuration_1_3.dtd">
+
+<module name="Checker">
+    <property name="severity" value="warning"/>
+    
+    <!-- File formatting -->
+    <module name="FileTabCharacter"/>
+    <module name="NewlineAtEndOfFile"/>
+    
+    <module name="TreeWalker">
+        <!-- Naming conventions -->
+        <module name="TypeName"/>
+        <module name="MethodName"/>
+        <module name="ConstantName"/>
+        <module name="LocalVariableName"/>
+        
+        <!-- Javadoc -->
+        <module name="JavadocMethod">
+            <property name="scope" value="public"/>
+        </module>
+        <module name="JavadocType"/>
+        
+        <!-- Code complexity -->
+        <module name="CyclomaticComplexity">
+            <property name="max" value="10"/>
+        </module>
+        <module name="MethodLength">
+            <property name="max" value="150"/>
+        </module>
+        
+        <!-- Best practices -->
+        <module name="EmptyBlock"/>
+        <module name="NeedBraces"/>
+        <module name="LeftCurly"/>
+        <module name="RightCurly"/>
+    </module>
+</module>
+\end{lstlisting}
+
+\subsubsection{Esecuzione}
+\begin{lstlisting}[language=bash]
+# Verifica code style
+./mvnw checkstyle:check
+
+# Genera report HTML
+./mvnw checkstyle:checkstyle
+# Report: target/site/checkstyle.html
+\end{lstlisting}
+
+Le violazioni Checkstyle sono integrate nel workflow \texttt{quality.yml} e reportate su SonarCloud come "Code Smells".
+
+\subsection{Riepilogo File di Configurazione}
+\label{subsec:config-summary}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{|l|l|p{5cm}|}
+\hline
+\textbf{File} & \textbf{Tool} & \textbf{Scopo} \\
+\hline
+sonar-project.properties & SonarCloud & Configurazione progetto, paths, coverage \\
+checkstyle.xml & Checkstyle & Regole code style e formatting \\
+spotbugs-security.xml & SpotBugs & Filtri security patterns \\
+dependency-check-suppressions.xml & OWASP & Suppressione false positive CVE \\
+pom.xml & Maven & Plugin JaCoCo, PITest, OWASP, SpotBugs \\
+.github/workflows/*.yml & GitHub Actions & CI/CD pipeline automatizzata \\
+\hline
+\end{tabular}
+\caption{Riepilogo file di configurazione analisi}
+\label{tab:config-files}
+\end{table}
+
+\subsection{Prossimi Passi}
+\label{subsec:next-steps}
+
+Dopo il setup della configurazione:
+
+\begin{enumerate}
+    \item Commit e push dei file di configurazione su GitHub
+    \item Esecuzione prima analisi coverage: \texttt{./mvnw clean test jacoco:report}
+    \item Setup account SonarCloud e configurazione secrets GitHub
+    \item Trigger workflow CI/CD con primo push
+    \item Analisi baseline results e popolamento directory \texttt{analysis/}
+    \item Identificazione aree critiche da migliorare
+    \item Iterazione con miglioramenti e re-test
+\end{enumerate}

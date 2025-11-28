@@ -1,0 +1,869 @@
+\section{Setup e Configurazione Progetto}
+\label{sec:setup-configuration}
+
+Questa sezione documenta le operazioni di setup e configurazione eseguite per preparare l'ambiente di analisi di dependability del progetto Spring PetClinic.
+
+\subsection{Repository GitHub}
+\label{subsec:github-repository}
+
+\subsubsection{Creazione Repository}
+Il progetto è stato configurato con un repository GitHub dedicato:
+
+\begin{itemize}
+    \item \textbf{Owner}: mariocelzo
+    \item \textbf{Repository}: petclinic-dependability-analysis
+    \item \textbf{URL}: \url{https://github.com/mariocelzo/petclinic-dependability-analysis}
+    \item \textbf{Visibilità}: Public
+    \item \textbf{Branch principale}: main
+\end{itemize}
+
+\subsubsection{Configurazione Remote Git}
+Per mantenere la possibilità di sincronizzare con il repository upstream di Spring Projects, sono stati configurati due remote:
+
+\begin{lstlisting}[language=bash, caption={Configurazione Git Remotes}]
+# Remote per il repository personale (origin)
+origin  https://github.com/mariocelzo/petclinic-dependability-analysis.git
+
+# Remote per il repository originale Spring Projects (upstream)
+upstream  https://github.com/spring-projects/spring-petclinic.git
+\end{lstlisting}
+
+Questa configurazione permette di:
+\begin{itemize}
+    \item Pushare modifiche e analisi sul repository personale (\texttt{origin})
+    \item Sincronizzare aggiornamenti dal progetto originale (\texttt{upstream})
+    \item Mantenere traccia delle divergenze rispetto alla baseline ufficiale
+\end{itemize}
+
+\subsubsection{Operazioni Eseguite}
+\begin{lstlisting}[language=bash, caption={Comandi Git Setup}]
+# 1. Rinomina remote originale in upstream
+git remote rename origin upstream
+
+# 2. Aggiunge nuovo remote per repository personale
+git remote add origin https://github.com/mariocelzo/petclinic-dependability-analysis.git
+
+# 3. Push iniziale del codice
+git push -u origin main
+
+# Output: 10,931 oggetti caricati (7.92 MiB)
+\end{lstlisting}
+
+\subsection{File di Configurazione Copiati}
+\label{subsec:config-files}
+
+Dalla directory \texttt{config/} del progetto principale sono stati copiati i seguenti file nella root del repository Spring PetClinic:
+
+\subsubsection{sonar-project.properties}
+File di configurazione per l'integrazione con SonarCloud.
+
+\begin{lstlisting}[language=properties, caption={sonar-project.properties - Configurazione Principale}]
+# Identificazione progetto
+sonar.projectKey=mariocelzo_petclinic-dependability-analysis
+sonar.organization=mariocelzo
+
+# Informazioni progetto
+sonar.projectName=Spring PetClinic Dependability Analysis
+sonar.projectVersion=1.0
+
+# Percorsi sorgenti e test
+sonar.sources=src/main/java
+sonar.tests=src/test/java
+
+# Java version
+sonar.java.source=21
+sonar.java.binaries=target/classes
+
+# Coverage report
+sonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+
+# Mutation testing
+sonar.pitest.mode=reuseReport
+sonar.pitest.reportsDirectory=target/pit-reports
+\end{lstlisting}
+
+\textbf{Dimensione}: 2.9 KB \\
+\textbf{Scopo}: Configura SonarCloud per analizzare il codice Java, integrare report JaCoCo e PITest, definire percorsi sorgenti/test.
+
+\subsubsection{checkstyle.xml}
+Regole di code style basate su Google Java Style Guide con customizzazioni.
+
+\begin{lstlisting}[language=xml, caption={checkstyle.xml - Regole Principali}]
+<module name="Checker">
+    <property name="severity" value="warning"/>
+    
+    <!-- Complessità ciclomatica massima -->
+    <module name="CyclomaticComplexity">
+        <property name="max" value="10"/>
+    </module>
+    
+    <!-- Lunghezza massima metodi -->
+    <module name="MethodLength">
+        <property name="max" value="150"/>
+    </module>
+    
+    <!-- Javadoc obbligatorio per API pubbliche -->
+    <module name="JavadocMethod">
+        <property name="scope" value="public"/>
+    </module>
+    
+    <!-- Naming conventions -->
+    <module name="TypeName"/>
+    <module name="MethodName"/>
+    <module name="ConstantName"/>
+</module>
+\end{lstlisting}
+
+\textbf{Dimensione}: 6.6 KB \\
+\textbf{Scopo}: Verifica conformità a standard di stile, complessità ciclomatica, lunghezza metodi, documentazione Javadoc.
+
+\subsubsection{spotbugs-security.xml}
+Filtri per SpotBugs e FindSecBugs per focus su security issues.
+
+\begin{lstlisting}[language=xml, caption={spotbugs-security.xml - Filtri Security}]
+<FindBugsFilter>
+    <!-- Include tutti i security bug patterns -->
+    <Match>
+        <Bug category="SECURITY"/>
+    </Match>
+    
+    <!-- Pattern specifici critici -->
+    <Match>
+        <Bug pattern="SQL_INJECTION_JDBC"/>
+    </Match>
+    <Match>
+        <Bug pattern="PATH_TRAVERSAL_IN"/>
+    </Match>
+    <Match>
+        <Bug pattern="XSS_REQUEST_PARAMETER_TO_SEND_ERROR"/>
+    </Match>
+    
+    <!-- Esclusioni test -->
+    <Match>
+        <Class name="~.*\.Test.*"/>
+        <Bug category="SECURITY"/>
+    </Match>
+</FindBugsFilter>
+\end{lstlisting}
+
+\textbf{Dimensione}: 4.8 KB \\
+\textbf{Scopo}: Configura analisi statica security-focused, filtra false positive nei test.
+
+\subsubsection{dependency-check-suppressions.xml}
+File per sopprimere false positive nelle scansioni CVE di OWASP.
+
+\begin{lstlisting}[language=xml, caption={dependency-check-suppressions.xml}]
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+    <!-- File vuoto inizialmente -->
+    <!-- Verrà popolato con suppressioni validate durante l'analisi -->
+</suppressions>
+\end{lstlisting}
+
+\textbf{Dimensione}: 685 bytes \\
+\textbf{Scopo}: Gestione false positive CVE, da popolare durante analisi iterativa.
+
+\subsection{GitHub Actions Workflows}
+\label{subsec:github-actions}
+
+Quattro workflow CI/CD sono stati copiati nella directory \texttt{.github/workflows/}:
+
+\subsubsection{build.yml - Build e Test Base}
+\begin{lstlisting}[language=yaml, caption={build.yml - Workflow Build}]
+name: Build and Test
+on: 
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+      
+      - name: Build with Maven
+        run: ./mvnw clean install -DskipTests
+      
+      - name: Run Tests
+        run: ./mvnw test
+      
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: target/surefire-reports/
+\end{lstlisting}
+
+\textbf{Trigger}: Push su main/develop, Pull Request \\
+\textbf{Durata stimata}: 3-5 minuti \\
+\textbf{Output}: Test results come artifact
+
+\subsubsection{quality.yml - Analisi Qualità}
+\begin{lstlisting}[language=yaml, caption={quality.yml - Workflow Qualità (estratto)}]
+name: Code Quality Analysis
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 2 * * 1'  # Lunedì alle 2 AM
+
+jobs:
+  sonarcloud:
+    name: SonarCloud Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history per SonarCloud
+      
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+      
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+      
+      - name: Run Tests with Coverage
+        run: ./mvnw clean test jacoco:report
+      
+      - name: SonarCloud Scan
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          ./mvnw sonar:sonar \
+            -Dsonar.projectKey=mariocelzo_petclinic-dependability-analysis \
+            -Dsonar.organization=mariocelzo \
+            -Dsonar.host.url=https://sonarcloud.io
+      
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: target/site/jacoco/
+
+  mutation-testing:
+    name: PITest Mutation Testing
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+      
+      - name: Run Mutation Tests
+        run: ./mvnw pitest:mutationCoverage
+      
+      - name: Upload Mutation Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: mutation-report
+          path: target/pit-reports/
+\end{lstlisting}
+
+\textbf{Trigger}: Push, Pull Request, Schedule (weekly) \\
+\textbf{Durata stimata}: 15-20 minuti \\
+\textbf{Output}: Coverage report, Mutation report, SonarCloud dashboard \\
+\textbf{Jobs}: SonarCloud analysis, Mutation testing (PITest)
+
+\subsubsection{security.yml - Analisi Sicurezza}
+\begin{lstlisting}[language=yaml, caption={security.yml - Workflow Security (estratto)}]
+name: Security Analysis
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '0 3 * * 0'  # Domenica alle 3 AM
+
+jobs:
+  dependency-check:
+    name: OWASP Dependency Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+      
+      - name: Run OWASP Dependency Check
+        run: ./mvnw dependency-check:check
+      
+      - name: Upload Security Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-check-report
+          path: target/dependency-check-report.html
+
+  spotbugs:
+    name: SpotBugs Security Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+      
+      - name: Run SpotBugs
+        run: ./mvnw spotbugs:check
+      
+      - name: Upload SpotBugs Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: spotbugs-report
+          path: target/spotbugsXml.xml
+
+  codeql:
+    name: CodeQL Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: java
+      
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+      
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+\end{lstlisting}
+
+\textbf{Trigger}: Push su main, Schedule (weekly) \\
+\textbf{Durata stimata}: 10-15 minuti \\
+\textbf{Output}: OWASP report, SpotBugs report, CodeQL security alerts \\
+\textbf{Jobs}: OWASP Dependency-Check, SpotBugs+FindSecBugs, CodeQL
+
+\subsubsection{docker.yml - Build Container}
+\begin{lstlisting}[language=yaml, caption={docker.yml - Workflow Docker (estratto)}]
+name: Docker Build and Push
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+      
+      - name: Build with Maven
+        run: ./mvnw clean package -DskipTests
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: mariocelzo/petclinic
+          tags: |
+            type=ref,event=tag
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest
+      
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+\end{lstlisting}
+
+\textbf{Trigger}: Push tag (v*), Manual workflow\_dispatch \\
+\textbf{Durata stimata}: 5-8 minuti \\
+\textbf{Output}: Docker image su DockerHub con tag versione e latest
+
+\subsection{Modifica pom.xml: Compatibilità Java}
+\label{subsec:pom-java-version}
+
+Il file \texttt{pom.xml} richiedeva inizialmente Java 25, non disponibile. È stato modificato per utilizzare Java 21 LTS:
+
+\begin{lstlisting}[language=xml, caption={pom.xml - Modifica versione Java}]
+<properties>
+    <!-- Prima: -->
+    <!-- <java.version>25</java.version> -->
+    <!-- <maven.compiler.release>17</maven.compiler.release> -->
+    
+    <!-- Dopo: -->
+    <java.version>21</java.version>
+    <maven.compiler.release>21</maven.compiler.release>
+</properties>
+\end{lstlisting}
+
+\textbf{Motivazione}: Java 21 è la versione LTS disponibile, compatibile con tutte le dipendenze Spring Boot 4.0.0-M3.
+
+\subsection{Aggiunta Plugin Maven}
+\label{subsec:maven-plugins}
+
+Nel file \texttt{pom.xml}, all'interno della sezione \texttt{<build><plugins>}, sono stati aggiunti i seguenti plugin:
+
+\subsubsection{JaCoCo - Code Coverage}
+\begin{lstlisting}[language=xml, caption={Plugin JaCoCo}]
+<plugin>
+    <groupId>org.jacoco</groupId>
+    <artifactId>jacoco-maven-plugin</artifactId>
+    <version>0.8.10</version>
+    <executions>
+        <execution>
+            <id>prepare-agent</id>
+            <goals>
+                <goal>prepare-agent</goal>
+            </goals>
+        </execution>
+        <execution>
+            <id>report</id>
+            <phase>test</phase>
+            <goals>
+                <goal>report</goal>
+            </goals>
+        </execution>
+        <execution>
+            <id>jacoco-check</id>
+            <phase>verify</phase>
+            <goals>
+                <goal>check</goal>
+            </goals>
+            <configuration>
+                <rules>
+                    <rule>
+                        <element>BUNDLE</element>
+                        <limits>
+                            <limit>
+                                <counter>LINE</counter>
+                                <value>COVEREDRATIO</value>
+                                <minimum>0.80</minimum>
+                            </limit>
+                            <limit>
+                                <counter>BRANCH</counter>
+                                <value>COVEREDRATIO</value>
+                                <minimum>0.75</minimum>
+                            </limit>
+                        </limits>
+                    </rule>
+                </rules>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+\end{lstlisting}
+
+\textbf{Configurazione}:
+\begin{itemize}
+    \item \textbf{Line Coverage minima}: 80\%
+    \item \textbf{Branch Coverage minima}: 75\%
+    \item \textbf{Report format}: HTML + XML
+    \item \textbf{Output}: \texttt{target/site/jacoco/}
+\end{itemize}
+
+\subsubsection{PITest - Mutation Testing}
+\begin{lstlisting}[language=xml, caption={Plugin PITest}]
+<plugin>
+    <groupId>org.pitest</groupId>
+    <artifactId>pitest-maven</artifactId>
+    <version>1.14.2</version>
+    <dependencies>
+        <dependency>
+            <groupId>org.pitest</groupId>
+            <artifactId>pitest-junit5-plugin</artifactId>
+            <version>1.2.0</version>
+        </dependency>
+    </dependencies>
+    <configuration>
+        <targetClasses>
+            <param>org.springframework.samples.petclinic.*</param>
+        </targetClasses>
+        <targetTests>
+            <param>org.springframework.samples.petclinic.*</param>
+        </targetTests>
+        <excludedClasses>
+            <param>org.springframework.samples.petclinic.PetClinicApplication</param>
+            <param>org.springframework.samples.petclinic.system.*</param>
+        </excludedClasses>
+        <mutators>
+            <mutator>DEFAULTS</mutator>
+        </mutators>
+        <outputFormats>
+            <outputFormat>XML</outputFormat>
+            <outputFormat>HTML</outputFormat>
+        </outputFormats>
+        <timestampedReports>false</timestampedReports>
+        <mutationThreshold>75</mutationThreshold>
+        <coverageThreshold>80</coverageThreshold>
+        <threads>4</threads>
+        <timeoutConstant>3000</timeoutConstant>
+        <verbose>false</verbose>
+    </configuration>
+</plugin>
+\end{lstlisting}
+
+\textbf{Configurazione}:
+\begin{itemize}
+    \item \textbf{Mutation Score minimo}: 75\%
+    \item \textbf{Coverage threshold}: 80\%
+    \item \textbf{Mutators}: DEFAULTS (tutti i mutatori standard)
+    \item \textbf{Threads}: 4 (parallelizzazione)
+    \item \textbf{Timeout}: 3000ms per mutazione
+    \item \textbf{Output}: \texttt{target/pit-reports/}
+\end{itemize}
+
+\subsubsection{OWASP Dependency-Check}
+\begin{lstlisting}[language=xml, caption={Plugin OWASP Dependency-Check}]
+<plugin>
+    <groupId>org.owasp</groupId>
+    <artifactId>dependency-check-maven</artifactId>
+    <version>8.4.0</version>
+    <configuration>
+        <format>ALL</format>
+        <outputDirectory>${project.build.directory}</outputDirectory>
+        <failBuildOnCVSS>7</failBuildOnCVSS>
+        <suppressionFiles>
+            <suppressionFile>dependency-check-suppressions.xml</suppressionFile>
+        </suppressionFiles>
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>check</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+\end{lstlisting}
+
+\textbf{Configurazione}:
+\begin{itemize}
+    \item \textbf{CVSS threshold}: 7.0 (HIGH) - build fallisce se trovate vulnerabilità >= 7.0
+    \item \textbf{Format}: ALL (HTML, JSON, XML, CSV)
+    \item \textbf{Suppressions}: File \texttt{dependency-check-suppressions.xml}
+    \item \textbf{Output}: \texttt{target/dependency-check-report.html}
+\end{itemize}
+
+\subsubsection{SpotBugs + FindSecBugs}
+\begin{lstlisting}[language=xml, caption={Plugin SpotBugs + FindSecBugs}]
+<plugin>
+    <groupId>com.github.spotbugs</groupId>
+    <artifactId>spotbugs-maven-plugin</artifactId>
+    <version>4.7.3.5</version>
+    <configuration>
+        <effort>Max</effort>
+        <threshold>Low</threshold>
+        <failOnError>false</failOnError>
+        <includeFilterFile>spotbugs-security.xml</includeFilterFile>
+        <plugins>
+            <plugin>
+                <groupId>com.h3xstream.findsecbugs</groupId>
+                <artifactId>findsecbugs-plugin</artifactId>
+                <version>1.12.0</version>
+            </plugin>
+        </plugins>
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>check</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+\end{lstlisting}
+
+\textbf{Configurazione}:
+\begin{itemize}
+    \item \textbf{Effort}: Max (analisi più approfondita)
+    \item \textbf{Threshold}: Low (report anche issue minori)
+    \item \textbf{FindSecBugs}: Plugin security-focused per pattern vulnerabilità
+    \item \textbf{Filter}: \texttt{spotbugs-security.xml} per focus su security
+    \item \textbf{Output}: \texttt{target/spotbugsXml.xml}
+\end{itemize}
+
+\subsubsection{Checkstyle}
+\begin{lstlisting}[language=xml, caption={Plugin Checkstyle}]
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-checkstyle-plugin</artifactId>
+    <version>3.3.0</version>
+    <configuration>
+        <configLocation>checkstyle.xml</configLocation>
+        <encoding>UTF-8</encoding>
+        <consoleOutput>true</consoleOutput>
+        <failsOnError>false</failsOnError>
+        <linkXRef>false</linkXRef>
+    </configuration>
+    <executions>
+        <execution>
+            <id>validate</id>
+            <phase>validate</phase>
+            <goals>
+                <goal>check</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+\end{lstlisting}
+
+\textbf{Configurazione}:
+\begin{itemize}
+    \item \textbf{Config}: \texttt{checkstyle.xml} custom rules
+    \item \textbf{Phase}: validate (eseguito prima della compilazione)
+    \item \textbf{Console output}: Abilitato per feedback immediato
+    \item \textbf{Output}: \texttt{target/site/checkstyle.html}
+\end{itemize}
+
+\subsubsection{SonarQube Scanner}
+\begin{lstlisting}[language=xml, caption={Plugin SonarQube Scanner}]
+<plugin>
+    <groupId>org.sonarsource.scanner.maven</groupId>
+    <artifactId>sonar-maven-plugin</artifactId>
+    <version>3.10.0.2594</version>
+</plugin>
+\end{lstlisting}
+
+\textbf{Configurazione}: Utilizza \texttt{sonar-project.properties} per configurazione dettagliata.
+
+\subsection{Riepilogo Modifiche pom.xml}
+\label{subsec:pom-summary}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Plugin} & \textbf{Versione} & \textbf{Scopo} \\
+\hline
+jacoco-maven-plugin & 0.8.10 & Code coverage analysis \\
+pitest-maven & 1.14.2 & Mutation testing \\
+dependency-check-maven & 8.4.0 & CVE vulnerability scanning \\
+spotbugs-maven-plugin & 4.7.3.5 & Static analysis + security \\
+maven-checkstyle-plugin & 3.3.0 & Code style verification \\
+sonar-maven-plugin & 3.10.0.2594 & SonarCloud integration \\
+\hline
+\end{tabular}
+\caption{Plugin Maven aggiunti per analisi dependability}
+\label{tab:maven-plugins-added}
+\end{table}
+
+\textbf{Totale righe aggiunte}: 178 linee XML \\
+\textbf{Dimensione pom.xml finale}: 628 righe (da 450)
+
+\subsection{Commit e Push su GitHub}
+\label{subsec:git-commits}
+
+Due commit sono stati creati e pushati sul repository GitHub:
+
+\subsubsection{Commit 1: Configurazione File}
+\begin{lstlisting}[language=bash, caption={Commit 1 - File di Configurazione}]
+Commit: 39fc5d2
+Author: Mario Celzo
+Date: 21 Novembre 2025
+Message: feat: Add dependability analysis configuration
+
+Modifiche:
+- Add SonarCloud configuration (sonar-project.properties)
+- Add Checkstyle rules (checkstyle.xml)
+- Add SpotBugs security filters (spotbugs-security.xml)
+- Add OWASP Dependency-Check suppressions
+- Add GitHub Actions workflows (build, quality, security, docker)
+- Update Java version to 21 in pom.xml for compatibility
+
+Files changed: 9 files, 860 insertions(+), 2 deletions(-)
+\end{lstlisting}
+
+\subsubsection{Commit 2: Plugin Maven}
+\begin{lstlisting}[language=bash, caption={Commit 2 - Plugin Maven}]
+Commit: 27ac291
+Author: Mario Celzo
+Date: 21 Novembre 2025
+Message: feat: Add Maven plugins for dependability analysis
+
+Modifiche:
+- Add JaCoCo plugin for code coverage analysis (0.8.10)
+- Add PITest plugin for mutation testing (1.14.2)
+- Add OWASP Dependency-Check for security vulnerability scanning (8.4.0)
+- Add SpotBugs + FindSecBugs for static security analysis (4.7.3.5)
+- Add Checkstyle plugin for code style verification (3.3.0)
+- Add SonarQube scanner plugin for cloud-based quality analysis
+
+Configured thresholds:
+- Line coverage: 80%
+- Branch coverage: 75%
+- Mutation score: 75%
+- CVSS fail threshold: 7.0
+
+Files changed: 1 file, 178 insertions(+)
+\end{lstlisting}
+
+\subsection{Stato Finale Repository}
+\label{subsec:final-state}
+
+\subsubsection{File Aggiunti alla Root}
+\begin{itemize}
+    \item \texttt{sonar-project.properties} (2.9 KB)
+    \item \texttt{checkstyle.xml} (6.6 KB)
+    \item \texttt{spotbugs-security.xml} (4.8 KB)
+    \item \texttt{dependency-check-suppressions.xml} (685 bytes)
+\end{itemize}
+
+\subsubsection{Workflow GitHub Actions}
+\begin{itemize}
+    \item \texttt{.github/workflows/build.yml} (1.7 KB)
+    \item \texttt{.github/workflows/quality.yml} (3.0 KB)
+    \item \texttt{.github/workflows/security.yml} (3.4 KB)
+    \item \texttt{.github/workflows/docker.yml} (2.3 KB)
+\end{itemize}
+
+\subsubsection{Modifiche File Esistenti}
+\begin{itemize}
+    \item \texttt{pom.xml}: +178 righe (plugin analisi)
+    \item Java version: 25 → 21
+    \item Compiler release: 17 → 21
+\end{itemize}
+
+\subsection{Verifica Configurazione}
+\label{subsec:configuration-verification}
+
+Per verificare la corretta installazione dei plugin, eseguire:
+
+\begin{lstlisting}[language=bash, caption={Verifica Plugin Installati}]
+# Verifica plugin disponibili
+./mvnw help:describe -Dplugin=org.jacoco:jacoco-maven-plugin
+./mvnw help:describe -Dplugin=org.pitest:pitest-maven
+./mvnw help:describe -Dplugin=org.owasp:dependency-check-maven
+
+# Verifica obiettivi (goals) disponibili
+./mvnw help:describe -Dplugin=jacoco -Ddetail
+
+# Lista tutti i plugin del progetto
+./mvnw help:effective-pom | grep -A 2 "<artifactId>.*-plugin</artifactId>"
+\end{lstlisting}
+
+\subsection{Prossimi Passi Configurazione}
+\label{subsec:next-config-steps}
+
+\subsubsection{Setup SonarCloud}
+\begin{enumerate}
+    \item Registrazione su \url{https://sonarcloud.io} con account GitHub
+    \item Import repository \texttt{mariocelzo/petclinic-dependability-analysis}
+    \item Generazione \texttt{SONAR\_TOKEN}
+    \item Aggiunta secret in GitHub: Settings → Secrets and variables → Actions → New repository secret
+    \item Nome secret: \texttt{SONAR\_TOKEN}
+\end{enumerate}
+
+\subsubsection{Setup DockerHub (Opzionale)}
+\begin{enumerate}
+    \item Creazione account DockerHub o login esistente
+    \item Creazione repository: \texttt{mariocelzo/petclinic}
+    \item Generazione Access Token
+    \item Aggiunta secrets in GitHub:
+    \begin{itemize}
+        \item \texttt{DOCKER\_USERNAME}: username DockerHub
+        \item \texttt{DOCKER\_PASSWORD}: access token generato
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{Prima Esecuzione Analisi}
+\begin{lstlisting}[language=bash, caption={Prima Esecuzione Locale}]
+# 1. Coverage baseline
+./mvnw clean test jacoco:report
+# Apri: target/site/jacoco/index.html
+
+# 2. Checkstyle (veloce)
+./mvnw checkstyle:check
+# Apri: target/site/checkstyle.html
+
+# 3. SpotBugs (medio, ~2-3 min)
+./mvnw spotbugs:check
+# Apri: target/spotbugsXml.xml
+
+# 4. OWASP Dependency-Check (lento, ~5-10 min prima volta)
+./mvnw dependency-check:check
+# Apri: target/dependency-check-report.html
+
+# 5. Mutation Testing (molto lento, ~10-15 min)
+./mvnw pitest:mutationCoverage
+# Apri: target/pit-reports/index.html
+\end{lstlisting}
+
+\subsection{Integrazione Documentazione LaTeX}
+\label{subsec:latex-documentation}
+
+È stato creato il file \texttt{docs/report/sections/08-analysis-tools.tex} con documentazione dettagliata su:
+\begin{itemize}
+    \item Architettura directory \texttt{analysis/}
+    \item Descrizione di ogni strumento (SonarCloud, JaCoCo, PITest, OWASP, SpotBugs, Checkstyle)
+    \item File di configurazione e loro scopo
+    \item Metriche monitorate e soglie
+    \item Workflow di analisi completo
+    \item Best practices e raccomandazioni
+\end{itemize}
+
+Questo file può essere importato nel documento principale LaTeX con:
+\begin{lstlisting}[language=tex]
+\input{sections/08-analysis-tools}
+\end{lstlisting}
+
+\subsection{Conclusioni Setup}
+\label{subsec:setup-conclusions}
+
+Il setup e la configurazione iniziale del progetto sono stati completati con successo. Sono stati configurati:
+\begin{itemize}
+    \item ✅ Repository GitHub con remote origin e upstream
+    \item ✅ File di configurazione per tutti gli strumenti di analisi
+    \item ✅ GitHub Actions workflows per CI/CD automatizzata
+    \item ✅ Plugin Maven per analisi locale
+    \item ✅ Documentazione LaTeX dettagliata per Overleaf
+\end{itemize}
+
+Il progetto è ora pronto per:
+\begin{enumerate}
+    \item Setup account SonarCloud e DockerHub
+    \item Prima esecuzione analisi locale per baseline
+    \item Trigger workflow CI/CD con push su GitHub
+    \item Raccolta e documentazione risultati analisi
+    \item Iterazione miglioramenti basati su finding
+\end{enumerate}
