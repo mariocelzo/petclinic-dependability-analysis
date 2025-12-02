@@ -1,0 +1,40 @@
+name: LaTeX PDF Build
+
+on:
+  push:
+    paths:
+      - 'docs/report/**/*.tex'
+      - 'docs/report/**/*.bib'
+  workflow_dispatch:
+
+jobs:
+  build-pdf:
+    runs-on: ubuntu-latest
+    name: Build LaTeX PDF
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Compile LaTeX document
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: main.tex
+          working_directory: docs/report
+          latexmk_use_xelatex: false
+          latexmk_shell_escape: true
+
+      - name: Upload PDF as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: report-pdf
+          path: docs/report/main.pdf
+          retention-days: 90
+
+      - name: Commit PDF to repository
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add docs/report/main.pdf || true
+          git diff --staged --quiet || git commit -m "docs: auto-generate PDF report [skip ci]"
+          git push || echo "Nothing to push"
