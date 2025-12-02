@@ -3,8 +3,9 @@ name: LaTeX PDF Build
 on:
   push:
     paths:
-      - 'docs/report/**/*.tex'
-      - 'docs/report/**/*.bib'
+      - 'docs/report/**'
+      - '**/*.tex'
+      - '**/*.bib'
   workflow_dispatch:
 
 jobs:
