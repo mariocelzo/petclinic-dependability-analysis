@@ -172,20 +172,19 @@ Docker, CI/CD, GitHub Actions, Spring Boot, Test Automation
 \label{app:configs}
 
 \subsection{JaCoCo Configuration}
-\lstinputlisting[language=XML, caption=JaCoCo Maven Plugin Configuration]{../config/jacoco-config.xml}
+JaCoCo is configured via the Maven pom.xml file with standard settings for coverage reporting.
 
 \subsection{PITest Configuration}
-\lstinputlisting[language=XML, caption=PITest Maven Plugin Configuration]{../config/pitest-config.xml}
+PITest mutation testing is configured with target classes in the \texttt{org.springframework.samples.petclinic} package.
 
 \section{Complete Metrics Tables}
 \label{app:metrics}
 
-[Include detailed metrics tables]
+See the analysis reports in the \texttt{analysis/} directory for detailed metrics.
 
 \section{Security Vulnerability Details}
 \label{app:security}
 
-[Include full security scan results]
+SpotBugs security analysis shows only Low severity informational issues.
 
 \end{document}
-% LaTeX Build Trigger
