@@ -1,0 +1,44 @@
+\section{Background and Related Work}
+\label{sec:background}
+
+\subsection{Software Dependability Fundamentals}
+
+The concept of software dependability, as articulated by Avizienis et al.~\cite{avizienis2004basic}, encompasses ``the ability to deliver service that can justifiably be trusted.'' This definition implies a multifaceted quality attribute comprising several interconnected properties. \emph{Availability} refers to readiness for correct service delivery when requested. \emph{Reliability} captures the continuity of correct service over time. \emph{Safety} ensures absence of catastrophic consequences affecting users or the environment. \emph{Integrity} guarantees absence of improper system alterations. Finally, \emph{maintainability} represents the ability to undergo modifications and repairs efficiently.
+
+These attributes are not independent; they interact in complex ways. High reliability contributes to availability, while poor maintainability may compromise long-term reliability as the system evolves. Security vulnerabilities threaten integrity, and undetected bugs may undermine safety in critical applications. A comprehensive dependability analysis must therefore assess multiple dimensions rather than focusing narrowly on any single attribute.
+
+\subsection{Code Coverage Analysis}
+
+Code coverage measurement quantifies the degree to which source code is exercised during test execution. JaCoCo (Java Code Coverage), the tool employed in this analysis, provides several complementary metrics~\cite{jacoco}. Line coverage indicates the percentage of executable lines reached during testing. Branch coverage measures decision point coverage, tracking whether both true and false branches of conditional statements are exercised. Method coverage reports the percentage of methods invoked, and complexity coverage weights results by cyclomatic complexity to emphasize testing of complex code paths.
+
+While coverage metrics provide valuable insight, their interpretation requires nuance. Marick~\cite{marick1999coverage} observes that high coverage is necessary but not sufficient for test quality---code may be executed without meaningful validation of its behavior. Industry conventions suggest 60-70\% as minimum acceptable coverage, 80-85\% as good coverage, and 90\% or above as excellent. However, these thresholds should be considered guidelines rather than absolute standards.
+
+\subsection{Mutation Testing}
+
+Mutation testing addresses coverage limitations by evaluating test effectiveness rather than mere execution. PITest, the mutation testing tool used in this analysis, introduces small syntactic changes (mutations) to the source code and verifies whether the test suite detects them~\cite{pitest}. A test ``kills'' a mutant when it fails on the modified code but passes on the original.
+
+Common mutation operators include conditionals boundary mutations (changing $<$ to $\leq$), conditional negation (changing $==$ to $\neq$), math operator substitution (changing $+$ to $-$), and return value mutations (returning null, empty collections, or inverted booleans). The mutation score, calculated as the ratio of killed mutants to total non-equivalent mutants, provides a more rigorous measure of test quality than coverage alone. Scores above 75\% generally indicate effective test suites~\cite{jia2011analysis}.
+
+\subsection{Performance Benchmarking}
+
+Java Microbenchmark Harness (JMH) provides infrastructure for writing, running, and analyzing micro-benchmarks~\cite{jmh}. JMH addresses the substantial challenges of benchmarking on the JVM, which include JIT compilation effects that cause performance to vary during execution, dead code elimination that may optimize away unmeasured code, and garbage collection pauses that introduce measurement noise.
+
+JMH mitigates these issues through controlled warmup phases that allow the JIT compiler to stabilize, blackhole consumption of results to prevent dead code elimination, and statistical aggregation across multiple iterations and forks. Benchmarks can measure throughput (operations per time unit), average time per operation, or sample time distributions for latency analysis.
+
+\subsection{Security Analysis Tools}
+
+Security analysis combines static analysis of code patterns with vulnerability scanning of dependencies. SpotBugs, extended with the FindSecBugs plugin, identifies security-sensitive code patterns including potential injection vulnerabilities, insecure cryptographic usage, and information exposure risks. OWASP Dependency-Check examines project dependencies against the National Vulnerability Database to identify known CVEs.
+
+The OWASP Top 10~\cite{owasp2021} provides a standard awareness document for web application security risks, covering injection, broken authentication, sensitive data exposure, and other critical vulnerability categories. Security analysis tools map their findings to this taxonomy to facilitate prioritization and remediation.
+
+\subsection{Automated Test Generation}
+
+Automated test generation tools apply various strategies to produce test cases without manual authorship. Randoop~\cite{pacheco2007randoop} employs feedback-directed random testing, generating method call sequences and pruning based on observed behavior. EvoSuite~\cite{fraser2011evosuite} uses search-based techniques, evolving test suites through genetic algorithms to maximize coverage objectives.
+
+Generated tests serve complementary purposes: regression testing to detect behavioral changes, coverage improvement to exercise previously untested code, and documentation through executable examples. However, generated tests typically require human review to ensure meaningful assertions and remove redundant or trivial cases.
+
+\subsection{Containerization and CI/CD}
+
+Docker containerization packages applications with their dependencies into portable, isolated units. Multi-stage builds separate compilation environments from runtime images, producing smaller and more secure deployments. Container orchestration platforms rely on health checks to manage container lifecycle and traffic routing.
+
+Continuous Integration and Continuous Deployment (CI/CD) pipelines automate the build, test, and deployment process. GitHub Actions, the platform used in this project, executes workflows triggered by repository events such as pushes and pull requests. Integration of analysis tools into CI/CD ensures continuous quality monitoring and prevents regression.

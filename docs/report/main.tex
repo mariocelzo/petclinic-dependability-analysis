@@ -1,5 +1,4 @@
 \documentclass[12pt,a4paper]{article}
-% Build: December 2, 2025
 
 % ============================================
 % PACKAGES
@@ -18,6 +17,8 @@
 \usepackage{subcaption}
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{tikz}
+\usepackage{setspace}
 
 % ============================================
 % PAGE SETUP
@@ -30,14 +31,18 @@
     bottom=3cm
 }
 
+% Fix fancyhdr warning
+\setlength{\headheight}{14.5pt}
+\addtolength{\topmargin}{-2.5pt}
+
 % ============================================
 % HEADER & FOOTER
 % ============================================
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{Spring PetClinic Dependability Analysis}
+\fancyhead[L]{\small Spring PetClinic Dependability Analysis}
 \fancyhead[R]{\thepage}
-\fancyfoot[C]{\small Software Dependability - Academic Year 2025/2026}
+\fancyfoot[C]{\small Software Dependability -- A.Y. 2024/2025}
 \renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\footrulewidth}{0.4pt}
 
@@ -76,81 +81,97 @@
     morestring=[b]"
 }
 
-% Fix fancyhdr warning
-\setlength{\headheight}{14.5pt}
-\addtolength{\topmargin}{-2.5pt}
-
 % ============================================
 % HYPERLINKS
 % ============================================
 \hypersetup{
     colorlinks=true,
-    linkcolor=blue,
+    linkcolor=blue!70!black,
     filecolor=magenta,
-    urlcolor=cyan,
-    citecolor=green,
+    urlcolor=blue!60!black,
+    citecolor=green!50!black,
     pdftitle={Spring PetClinic Dependability Analysis},
     pdfauthor={Mario Celzo},
 }
-
-% ============================================
-% TITLE PAGE DATA
-% ============================================
-\title{
-    \vspace{-2cm}
-    % \includegraphics[width=0.3\textwidth]{figures/university-logo.png}\\[1cm]
-    {\LARGE \textbf{Spring PetClinic}}\\[0.5cm]
-    {\Large Comprehensive Dependability Analysis}\\[0.3cm]
-    {\large Software Dependability Course}
-}
-
-\author{
-    \textbf{Author:}\\[0.3cm]
-    Mario Celzo\\[1cm]
-    \textbf{Repository:}\\
-    \url{https://github.com/mariocelzo/petclinic-dependability-analysis}\\[0.5cm]
-    \textbf{SonarCloud:}\\
-    \url{https://sonarcloud.io/project/overview?id=mariocelzo_petclinic-dependability-analysis}
-}
-
-\date{Academic Year 2025/2026\\[0.5cm] Last Update: 28 November 2025}
 
 % ============================================
 % DOCUMENT BEGIN
 % ============================================
 \begin{document}
 
-% Title page
-\maketitle
-\thispagestyle{empty}
-\newpage
+% ============================================
+% TITLE PAGE
+% ============================================
+\begin{titlepage}
+    \centering
+    
+    % University header
+    \vspace*{1cm}
+    
+    {\Large\textsc{Università degli Studi}}\\[0.3cm]
+    {\large\textsc{Dipartimento di Informatica}}\\[1.5cm]
+    
+    % Course name
+    {\large Corso di}\\[0.2cm]
+    {\Large\textbf{Software Dependability}}\\[0.3cm]
+    {\normalsize Anno Accademico 2024/2025}\\[2cm]
+    
+    % Title
+    \rule{\textwidth}{1.5pt}\\[0.5cm]
+    {\Huge\bfseries Spring PetClinic}\\[0.3cm]
+    {\LARGE Comprehensive Dependability Analysis}\\[0.5cm]
+    \rule{\textwidth}{1.5pt}\\[2cm]
+    
+    % Author and info
+    \begin{minipage}[t]{0.45\textwidth}
+        \begin{flushleft}
+            \large\textit{Autore:}\\
+            \Large\textbf{Mario Celzo}
+        \end{flushleft}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.45\textwidth}
+        \begin{flushright}
+            \large\textit{Matricola:}\\
+            \Large\textbf{[Matricola]}
+        \end{flushright}
+    \end{minipage}\\[2cm]
+    
+    % Project links
+    \begin{center}
+        \large\textbf{Risorse del Progetto}\\[0.5cm]
+        \normalsize
+        \begin{tabular}{rl}
+            \textbf{Repository:} & \url{https://github.com/mariocelzo/petclinic-dependability-analysis}\\[0.2cm]
+            \textbf{SonarCloud:} & \url{https://sonarcloud.io/project/overview?id=mariocelzo_petclinic-dependability-analysis}\\[0.2cm]
+            \textbf{DockerHub:} & \url{https://hub.docker.com/r/wario03/petclinic-dependability}
+        \end{tabular}
+    \end{center}
+    
+    \vfill
+    
+    % Date
+    {\large Dicembre 2025}
+    
+\end{titlepage}
 
-% Abstract
+% ============================================
+% ABSTRACT
+% ============================================
+\newpage
 \section*{Abstract}
 \addcontentsline{toc}{section}{Abstract}
 
-This report presents a comprehensive dependability analysis of the Spring PetClinic application, 
-a sample Spring Boot web application developed by the Spring Framework team. The analysis 
-encompasses multiple dimensions of software quality including static code analysis, test 
-coverage assessment, containerization, and CI/CD pipeline implementation.
+This report presents a comprehensive dependability analysis of the Spring PetClinic application, a reference Spring Boot web application developed by the Spring Framework team for demonstrating framework capabilities. The analysis encompasses multiple dimensions of software quality, evaluated through nine distinct criteria covering static code analysis, test coverage assessment, mutation testing, performance benchmarking, security scanning, automated test generation, and containerization.
 
-Using industry-standard tools such as SonarCloud, JaCoCo, Docker, and GitHub Actions, 
-we evaluated the software's dependability characteristics. Our findings indicate that 
-Spring PetClinic exhibits \textbf{excellent code quality} with:
+The evaluation employed industry-standard tools including SonarCloud for static analysis, JaCoCo for code coverage measurement, PITest for mutation testing, JMH for performance benchmarking, Randoop for automated test generation, SpotBugs with FindSecBugs for security analysis, and Docker for containerization. All analyses were integrated into a fully automated CI/CD pipeline using GitHub Actions.
 
-\begin{itemize}
-    \item \textbf{Triple-A SonarCloud rating} (Security: A, Reliability: A, Maintainability: A)
-    \item \textbf{91.9\% test coverage}, significantly exceeding the 80\% industry target
-    \item \textbf{Zero security vulnerabilities} and zero bugs detected
-    \item \textbf{Fully automated CI/CD pipeline} with Docker image deployment
-\end{itemize}
+Our findings demonstrate that Spring PetClinic exhibits excellent software quality characteristics. The codebase achieved a Triple-A rating from SonarCloud, indicating outstanding security, reliability, and maintainability with zero detected bugs or vulnerabilities. Test coverage reached 91.9\%, significantly exceeding the 80\% industry standard, while mutation testing revealed an 85\% mutation kill rate with 94\% test strength. Performance benchmarks established baseline metrics showing all critical operations complete in sub-millisecond time. The automated test generation campaign produced 500 additional regression tests, and security analysis identified only low-severity informational issues.
 
-The analysis also documents the challenges encountered during tool integration, 
-particularly the OWASP Dependency-Check NVD API authentication issue, and provides 
-detailed solutions for future reference.
+The project also documents significant technical challenges encountered during tool integration, particularly the compatibility issues between PITest and Spring Boot 4.0.0-M3's JUnit Platform version, and the OWASP Dependency-Check NVD API authentication changes. Solutions and workarounds are provided for future reference.
 
-\textbf{Keywords:} Software Dependability, Code Coverage, Static Analysis, SonarCloud, 
-Docker, CI/CD, GitHub Actions, Spring Boot, Test Automation
+\vspace{0.5cm}
+\noindent\textbf{Keywords:} Software Dependability, Code Coverage, Mutation Testing, Static Analysis, SonarCloud, Docker, CI/CD, GitHub Actions, Spring Boot, JMH, PITest
 
 \newpage
 
@@ -160,23 +181,25 @@ Docker, CI/CD, GitHub Actions, Spring Boot, Test Automation
 
 % List of Figures
 \listoffigures
+\addcontentsline{toc}{section}{List of Figures}
 \newpage
 
 % List of Tables
 \listoftables
+\addcontentsline{toc}{section}{List of Tables}
 \newpage
 
 % ============================================
-% MAIN SECTIONS (Include from separate files)
+% MAIN SECTIONS
 % ============================================
 
-\input{sections/01-introduction}
-\input{sections/02-background}
-\input{sections/03-methodology}
-\input{sections/04-analysis}
-\input{sections/05-results}
+\input{sections/01-introduction-revised}
+\input{sections/02-background-revised}
+\input{sections/03-methodology-revised}
+\input{sections/04-analysis-revised}
+\input{sections/05-results-revised}
 \input{sections/06-improvements}
-\input{sections/07-conclusions}
+\input{sections/07-conclusions-revised}
 
 % ============================================
 % BIBLIOGRAPHY
@@ -195,20 +218,34 @@ Docker, CI/CD, GitHub Actions, Spring Boot, Test Automation
 \label{app:configs}
 
 \subsection{JaCoCo Configuration}
-JaCoCo is configured via the Maven pom.xml file with standard settings for coverage reporting.
+JaCoCo is integrated via the Maven plugin with default configuration, automatically generating HTML and XML reports during the \texttt{verify} phase. The plugin instruments bytecode at runtime to track line, branch, and method coverage without requiring source code modifications.
 
 \subsection{PITest Configuration}
-PITest mutation testing is configured with target classes in the \texttt{org.springframework.samples.petclinic} package.
+PITest mutation testing targets the \texttt{org.springframework.samples.petclinic} package with customized mutators including \texttt{CONDITIONALS\_BOUNDARY}, \texttt{NEGATE\_CONDITIONALS}, \texttt{MATH}, and the \texttt{RETURNS} mutator group. JVM arguments are configured for Java 21 module access compatibility.
 
-\section{Complete Metrics Tables}
-\label{app:metrics}
+\subsection{JMH Benchmark Configuration}
+Benchmarks execute with 3 warmup iterations and 5 measurement iterations of 1 second each, using \texttt{AverageTime} mode in milliseconds. The H2 in-memory database profile ensures test isolation and reproducibility.
 
-See the analysis reports in the \texttt{analysis/} directory for detailed metrics.
+\section{Complete Analysis Commands}
+\label{app:commands}
 
-\section{Security Vulnerability Details}
-\label{app:security}
+All analyses can be reproduced using the following Maven commands:
 
-SpotBugs security analysis shows only Low severity informational issues.
+\begin{lstlisting}[language=bash, caption=Analysis Command Reference]
+# Run all tests with coverage
+./mvnw clean verify
+
+# Generate JaCoCo report
+./mvnw jacoco:report
+
+# Execute mutation testing
+./mvnw pitest:mutationCoverage
+
+# Run JMH benchmarks
+./mvnw test -Pbenchmark
+
+# Security analysis
+./mvnw spotbugs:check
+\end{lstlisting}
 
 \end{document}
-% Build trigger Tue Dec  2 15:24:34 CET 2025

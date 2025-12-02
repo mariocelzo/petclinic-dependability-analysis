@@ -426,12 +426,173 @@ This comparison illustrates that high line coverage (91.9\%) does not guarantee 
 \subsection{Criterion 7: Performance Benchmarks}
 \label{subsec:performance}
 
-\textit{This analysis is scheduled for Week 4 of the project. JMH benchmarks will be implemented for critical components.}
+JMH (Java Microbenchmark Harness) version 1.37 was integrated to measure the performance of critical repository operations. Benchmarks were executed using \texttt{AverageTime} mode with H2 in-memory database to ensure isolation and reproducibility.
+
+\subsubsection{Benchmark Configuration}
+
+\begin{itemize}
+    \item \textbf{JMH Version}: 1.37
+    \item \textbf{Mode}: AverageTime (ms/op)
+    \item \textbf{Warmup}: 3 iterations, 1 second each
+    \item \textbf{Measurement}: 5 iterations, 1 second each
+    \item \textbf{Database}: H2 in-memory (profile: h2)
+    \item \textbf{Spring Profile}: Configured to disable Docker Compose
+\end{itemize}
+
+\subsubsection{OwnerRepository Benchmark Results}
+
+The \texttt{OwnerRepository} is central to pet clinic operations and was benchmarked for common CRUD operations.
+
+\begin{table}[h]
+\centering
+\caption{OwnerRepository Performance Metrics}
+\label{tab:owner-benchmarks}
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Operation} & \textbf{Score (ms/op)} & \textbf{Error} & \textbf{Assessment} \\
+\midrule
+countOwners & 0.006 & ±0.001 & Excellent \\
+findOwnerById & 0.006 & ±0.001 & Excellent \\
+findOwnersByLastName & 0.011 & ±0.001 & Excellent \\
+findAllOwners & 0.019 & ±0.001 & Excellent \\
+saveOwner & 0.022 & ±0.001 & Excellent \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+All OwnerRepository operations complete in under 25 microseconds, demonstrating excellent performance for database access patterns.
+
+\subsubsection{VetRepository Benchmark Results}
+
+The \texttt{VetRepository} was benchmarked to evaluate caching effectiveness and pagination performance.
+
+\begin{table}[h]
+\centering
+\caption{VetRepository Performance Metrics}
+\label{tab:vet-benchmarks}
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Operation} & \textbf{Score (ms/op)} & \textbf{Error} & \textbf{Assessment} \\
+\midrule
+findAllVets & $\approx 10^{-4}$ & ±0.001 & Excellent \\
+findAllVetsPaginated & $\approx 10^{-4}$ & ±0.001 & Excellent \\
+findAllVetsCachedMultipleCalls & 0.003 & ±0.001 & Excellent \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Performance Analysis}
+
+\paragraph{Key Findings}
+\begin{enumerate}
+    \item \textbf{Consistent Sub-millisecond Performance}: All benchmarked operations complete in less than 1ms, ensuring responsive user experience.
+    \item \textbf{Spring Data JPA Optimization}: The framework provides efficient query execution with minimal overhead.
+    \item \textbf{Cache Effectiveness}: The \texttt{findAllVets} operation leverages Spring's caching mechanism, showing excellent performance even with multiple consecutive calls.
+    \item \textbf{Pagination Efficiency}: Paginated queries show no performance degradation compared to non-paginated versions.
+\end{enumerate}
+
+\paragraph{Baseline Metrics Established}
+These benchmarks provide a baseline for:
+\begin{itemize}
+    \item Detecting performance regressions in future releases
+    \item Validating optimization efforts
+    \item Comparing different database backends
+    \item Evaluating impact of code changes on critical paths
+\end{itemize}
+
+\paragraph{Recommendations}
+\begin{itemize}
+    \item \textbf{Extend Benchmark Coverage}: Add benchmarks for \texttt{PetRepository} and \texttt{VisitRepository}
+    \item \textbf{Load Testing}: Complement microbenchmarks with integration load tests
+    \item \textbf{Database Comparison}: Run benchmarks against PostgreSQL to compare with H2 results
+\end{itemize}
 
 \subsection{Criterion 8: Automated Test Generation}
 \label{subsec:testgen}
 
-\textit{This analysis is scheduled for Week 4 of the project. EvoSuite or Randoop will be used to generate additional tests.}
+Randoop 4.3.3 was used to automatically generate regression tests for the model layer classes. The tool employs feedback-directed random test generation to create comprehensive test suites.
+
+\subsubsection{Configuration}
+
+\begin{itemize}
+    \item \textbf{Tool}: Randoop 4.3.3
+    \item \textbf{Generation Time}: 60 seconds
+    \item \textbf{Target Classes}: 10 model/entity classes
+    \item \textbf{Output Format}: JUnit 5 (converted from JUnit 4)
+\end{itemize}
+
+\subsubsection{Target Classes}
+
+The following classes were analyzed:
+\begin{enumerate}
+    \item \texttt{Owner}, \texttt{Pet}, \texttt{PetType}, \texttt{Visit} (owner package)
+    \item \texttt{Vet}, \texttt{Specialty}, \texttt{Vets} (vet package)
+    \item \texttt{BaseEntity}, \texttt{NamedEntity}, \texttt{Person} (model package)
+\end{enumerate}
+
+\subsubsection{Generation Results}
+
+\begin{table}[h]
+\centering
+\caption{Randoop Test Generation Summary}
+\label{tab:randoop-results}
+\begin{tabular}{lr}
+\toprule
+\textbf{Metric} & \textbf{Value} \\
+\midrule
+Test Methods Generated & 500 \\
+Lines of Code & $\approx$14,000 \\
+Test Classes & 1 \\
+Tests Passing & 500/500 (100\%) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Coverage Impact}
+
+\begin{table}[h]
+\centering
+\caption{Coverage Before and After Randoop Integration}
+\label{tab:coverage-impact}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Package} & \textbf{Before} & \textbf{After} & \textbf{Change} \\
+\midrule
+model & 95\% & 100\% & +5\% \\
+vet & 95\% & 100\% & +5\% \\
+owner & 93\% & 93\% & = \\
+Branch Coverage (Total) & 84\% & 88\% & +4\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Test Characteristics}
+
+The generated tests include:
+\begin{itemize}
+    \item \textbf{Constructor Tests}: Object instantiation verification
+    \item \textbf{Getter/Setter Tests}: Property access validation
+    \item \textbf{Method Chain Tests}: Complex interaction sequences
+    \item \textbf{Null Handling Tests}: Behavior with null inputs
+    \item \textbf{Exception Tests}: Expected exception verification
+\end{itemize}
+
+\subsubsection{Analysis}
+
+\paragraph{Strengths}
+\begin{enumerate}
+    \item \textbf{High Volume}: 500 tests generated in 60 seconds
+    \item \textbf{Edge Case Discovery}: Automatically explores boundary conditions
+    \item \textbf{Regression Safety}: Documents current behavior for future changes
+    \item \textbf{Full Model Coverage}: Achieved 100\% coverage of model and vet packages
+\end{enumerate}
+
+\paragraph{Limitations}
+\begin{enumerate}
+    \item \textbf{No Business Logic Validation}: Tests verify behavior, not correctness
+    \item \textbf{Model Classes Only}: Controllers and services require different approaches
+    \item \textbf{JUnit 4 Output}: Required migration to JUnit 5 for project compatibility
+\end{enumerate}
 
 \subsection{Criterion 9: Security Analysis}
 \label{subsec:security}

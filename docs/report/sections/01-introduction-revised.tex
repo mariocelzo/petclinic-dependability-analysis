@@ -1,0 +1,26 @@
+\section{Introduction}
+\label{sec:introduction}
+
+\subsection{Motivation and Context}
+
+Software dependability represents a cornerstone of modern software engineering, encompassing the fundamental attributes of reliability, availability, safety, security, and maintainability~\cite{avizienis2004basic}. As software systems increasingly underpin critical operations across industries, from healthcare to finance, ensuring their dependable behavior becomes not merely desirable but essential. A system's dependability directly impacts user trust, business continuity, and in some contexts, human safety.
+
+This project conducts a systematic dependability analysis of the Spring PetClinic application, employing a multi-dimensional evaluation framework that assesses code quality, test effectiveness, security posture, and operational characteristics. By applying industry-standard analysis tools and methodologies to a well-known reference application, this work demonstrates practical techniques for dependability assessment that can be adapted to other software projects.
+
+\subsection{Project Objectives}
+
+The analysis pursues seven interconnected objectives. First, we evaluate code quality through static analysis to identify bugs, vulnerabilities, and maintainability issues. Second, we measure the extent to which existing tests exercise the application code, establishing coverage baselines. Third, mutation testing evaluates test suite effectiveness by measuring how well tests detect injected faults. Fourth, performance benchmarking establishes baseline metrics for critical operations and identifies potential bottlenecks. Fifth, security analysis scans for known vulnerabilities in dependencies and security-sensitive code patterns. Sixth, automated test generation explores coverage gap remediation through tool-assisted test creation. Finally, comprehensive documentation captures all findings, challenges encountered, and solutions developed.
+
+\subsection{Application Under Analysis}
+
+Spring PetClinic serves as the subject of this analysis---a sample Spring Boot application designed by the Spring Framework team to demonstrate framework capabilities. The application implements a veterinary clinic management system supporting owner and pet registration, veterinarian information display, and visit scheduling functionality.
+
+Several characteristics make PetClinic an excellent candidate for dependability analysis. The application exhibits realistic complexity through typical web application patterns including MVC architecture, database persistence, form validation, and template rendering. Active maintenance by the Spring team ensures the codebase remains current with framework best practices. The existing test suite of 44 tests provides a meaningful baseline for comparative analysis, and the application's moderate size enables comprehensive analysis within project constraints.
+
+\subsection{Technology Stack}
+
+The analysis targets Spring Boot version 4.0.0-SNAPSHOT (Milestone 3), running on Java 21 with the Eclipse Temurin distribution. Maven 3.9+ serves as the build tool, accessed through the Maven Wrapper for version consistency. The application uses H2 in-memory database for development and testing, with MySQL support available for production deployment. The web layer combines Spring MVC with Thymeleaf templates, while the test infrastructure builds on JUnit 5, Mockito, and Spring Boot Test utilities. Containerization uses Docker with multi-stage builds, and GitHub Actions provides the CI/CD automation platform with SonarCloud integration for continuous code quality monitoring.
+
+\subsection{Report Structure}
+
+This report follows a logical progression from background through analysis to conclusions. Chapter~\ref{sec:background} establishes the theoretical foundation by introducing software dependability concepts and surveying the analysis tools employed. Chapter~\ref{sec:methodology} details the experimental setup, evaluation criteria, and analysis procedures. Chapter~\ref{sec:analysis} presents comprehensive results for each of the nine evaluation criteria with supporting data and visualizations. Chapter~\ref{sec:results} synthesizes findings, discusses their implications, and documents challenges encountered with their solutions. Chapter~\ref{sec:improvements} describes enhancements implemented based on analysis findings. Finally, Chapter~\ref{sec:conclusions} summarizes key achievements, articulates lessons learned, acknowledges limitations, and proposes directions for future work.

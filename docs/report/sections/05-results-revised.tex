@@ -1,0 +1,89 @@
+\section{Results Discussion}
+\label{sec:results}
+
+\subsection{Achievement Summary}
+
+All nine evaluation criteria were successfully completed, with metrics meeting or exceeding targets across every dimension. Table~\ref{tab:summary} provides a consolidated view of achievements against objectives.
+
+\begin{table}[h]
+\centering
+\caption{Evaluation Criteria Achievement Summary}
+\label{tab:summary}
+\begin{tabular}{llccc}
+\toprule
+\textbf{Criterion} & \textbf{Key Metric} & \textbf{Target} & \textbf{Achieved} & \textbf{Status} \\
+\midrule
+CI/CD Pipeline & Build Success & 100\% & 100\% & \checkmark \\
+Static Analysis & SonarCloud Grade & A & A & \checkmark \\
+Docker Image & Published to Hub & Yes & Yes & \checkmark \\
+Docker Container & Health Check & Pass & Pass & \checkmark \\
+Test Coverage & Line Coverage & > 80\% & 91.9\% & \checkmark \\
+Mutation Testing & Kill Rate & > 75\% & 85\% & \checkmark \\
+Performance & Baseline Set & Yes & < 1ms/op & \checkmark \\
+Test Generation & Coverage Gain & Positive & +4\% & \checkmark \\
+Security & Critical Issues & 0 & 0 & \checkmark \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Quality Assessment Synthesis}
+
+The analysis reveals Spring PetClinic as a well-engineered application exhibiting strong dependability characteristics. The Triple-A SonarCloud rating confirms excellent security, reliability, and maintainability, while the absence of detected bugs or vulnerabilities indicates robust implementation. High test coverage (91.9\%) combined with strong mutation test effectiveness (85\% kill rate, 94\% test strength) demonstrates not merely extensive testing but effective testing that validates application behavior.
+
+Performance benchmarks establish that all critical operations complete efficiently, with sub-millisecond execution times suitable for responsive user experiences. The automated CI/CD pipeline ensures these quality characteristics are continuously monitored, preventing regression as the codebase evolves.
+
+\subsection{Comparative Analysis: Coverage versus Mutation Score}
+
+A particularly instructive finding emerges from comparing traditional coverage metrics with mutation testing results. While the \texttt{petclinic.owner} package achieves 98\% line coverage, mutation coverage reaches only 84\%---a 14 percentage point gap indicating tests that execute code without effectively validating its behavior.
+
+\begin{table}[h]
+\centering
+\caption{Coverage versus Mutation Score by Package}
+\label{tab:coverage-vs-mutation}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Package} & \textbf{Line Coverage} & \textbf{Mutation Score} & \textbf{Gap} \\
+\midrule
+petclinic.owner & 98\% & 84\% & 14\% \\
+petclinic.vet & 100\% & 100\% & 0\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The \texttt{petclinic.vet} package demonstrates the ideal: 100\% line coverage translating to 100\% mutation coverage, indicating tests that both execute and validate all code paths. This comparison underscores mutation testing's value as a complement to coverage metrics for assessing test effectiveness.
+
+\subsection{Technical Challenges and Solutions}
+
+The analysis encountered several technical challenges requiring investigation and resolution. These experiences provide valuable lessons for future dependability analysis projects.
+
+\subsubsection{Java Version Compatibility}
+
+The initial development environment ran Java 25 (early access), but the project required Java 21. This manifested as build failures with incompatible class file version errors. Resolution involved installing the correct Java version via package manager and configuring \texttt{JAVA\_HOME} appropriately. The lesson: verify environment prerequisites before beginning analysis.
+
+\subsubsection{OWASP Dependency-Check Authentication}
+
+The SonarCloud workflow initially failed without clear error indication in GitHub Actions logs. Local reproduction revealed HTTP 403 errors from the National Vulnerability Database, which since December 2023 requires API key authentication. Rather than obtaining and managing NVD API keys, the solution leveraged SonarCloud's built-in security analysis, which provides equivalent functionality. The lesson: when CI/CD pipelines fail with unclear errors, reproduce locally for complete diagnostic information.
+
+\subsubsection{PITest JUnit Platform Conflict}
+
+PITest mutation testing failed with cryptic ``OutputDirectoryProvider not available'' errors. Investigation revealed a version conflict: the \texttt{pitest-junit5-plugin} bundled JUnit Platform 1.11.0, while Spring Boot 4.0.0-M3 required version 1.13.4. Resolution required explicit dependency exclusions and version declarations. Additionally, the \texttt{RETURN\_VALS} mutator group name changed in PITest 1.17.x, requiring configuration updates. The lesson: bleeding-edge framework versions may require manual dependency resolution for tool compatibility.
+
+\subsubsection{SonarCloud Organization Configuration}
+
+Initial SonarCloud integration failed with authorization errors despite correct token configuration. The missing element was the \texttt{sonar.organization} property in \texttt{pom.xml}, required for linking the project to the correct SonarCloud organization. The lesson: tool documentation should be reviewed carefully for all required configuration properties.
+
+\subsection{Threats to Validity}
+
+Several factors may affect the generalizability and interpretation of these results.
+
+Regarding internal validity, automated analysis tools may produce false positives or negatives, potentially overstating or understating quality characteristics. Some metrics may be environment-dependent, though consistent results across local and CI environments mitigate this concern. The metrics selected, while comprehensive, may not capture all quality dimensions relevant to every application context.
+
+Regarding external validity, Spring PetClinic is a relatively small demonstration application. Results may not directly extrapolate to larger, more complex systems where different issues may emerge. The Spring Boot technology stack represents one ecosystem among many, and tool availability and behavior may differ for other frameworks.
+
+These limitations were mitigated through cross-validation with multiple tools, repeated measurements for performance data, manual review of automated findings, and explicit documentation of assumptions and constraints.
+
+\subsection{Key Achievements}
+
+The analysis achieved several notable outcomes beyond meeting individual criterion targets. A fully automated quality pipeline now executes on every code change, ensuring continuous monitoring without manual intervention. Comprehensive documentation captures not only results but also the challenges encountered and their solutions, providing value for future projects. The Docker container test in CI validates deployment artifacts automatically. Generated tests augment the existing suite with additional regression coverage. All findings are traceable to specific commits and tool configurations for reproducibility.
+
+These achievements establish a foundation for ongoing quality assurance as the project evolves, demonstrating that systematic dependability analysis yields lasting infrastructure value beyond point-in-time assessment.

@@ -1,0 +1,67 @@
+\section{Conclusions}
+\label{sec:conclusions}
+
+\subsection{Summary of Contributions}
+
+This project conducted a comprehensive dependability analysis of the Spring PetClinic application, evaluating nine criteria spanning code quality, test effectiveness, performance, security, and deployment readiness. The analysis employed industry-standard tools including SonarCloud, JaCoCo, PITest, JMH, Randoop, SpotBugs, and Docker, integrated into a fully automated CI/CD pipeline using GitHub Actions.
+
+The findings demonstrate that Spring PetClinic exhibits excellent software quality characteristics suitable for its role as a Spring Framework reference implementation. All evaluation criteria were successfully completed with metrics meeting or exceeding targets. The codebase achieved Triple-A SonarCloud rating with zero detected bugs or vulnerabilities, 91.9\% test coverage with 85\% mutation kill rate, sub-millisecond performance for all benchmarked operations, and production-ready containerization with automated deployment.
+
+\subsection{Technical Lessons Learned}
+
+The analysis yielded several valuable technical insights applicable to future dependability analysis projects.
+
+First, local reproduction proves essential for CI/CD debugging. GitHub Actions logs often truncate error output, making root cause identification difficult. Reproducing failures locally provides complete diagnostic information necessary for effective troubleshooting.
+
+Second, coverage metrics require mutation testing complement. The comparison between line coverage and mutation scores revealed that high coverage does not guarantee effective testing. Mutation testing exposes assertion weaknesses invisible to coverage analysis, making it an essential component of thorough test suite evaluation.
+
+Third, tool version compatibility demands attention. Bleeding-edge framework versions like Spring Boot 4.0.0-M3 may conflict with analysis tool dependencies. Explicit dependency management, including exclusions and version declarations, resolves these conflicts but requires investigation when cryptic errors occur.
+
+Fourth, external service dependencies evolve. The OWASP Dependency-Check NVD API authentication change demonstrates that external services may modify access requirements without coordinated notification. Analysis workflows should accommodate such changes gracefully.
+
+Fifth, automated test generation complements manual testing. Randoop-generated tests provided additional regression coverage but required human review for assertion quality. Generated tests excel at boundary condition exploration but lack semantic understanding for business logic validation.
+
+\subsection{Process Insights}
+
+Beyond technical findings, the project illuminated several process considerations relevant to dependability analysis practice.
+
+Early tool integration pays dividends. Establishing analysis infrastructure early enables continuous quality monitoring throughout development rather than point-in-time assessment. Issues detected early cost less to resolve than those discovered late.
+
+Incremental improvement proves more manageable than comprehensive remediation. Addressing findings systematically, criterion by criterion, maintains momentum and produces visible progress. Attempting to resolve everything simultaneously risks overwhelm and incomplete execution.
+
+Documentation investment yields lasting value. Detailed recording of challenges, investigations, and solutions creates a knowledge base benefiting future projects. The troubleshooting documentation produced during this analysis addresses issues likely to recur in similar contexts.
+
+Time estimates require padding for investigation. Analysis tasks consistently required more time than initially anticipated, primarily due to unexpected tool behavior requiring research and experimentation. Project planning should accommodate this uncertainty.
+
+\subsection{Limitations and Scope Boundaries}
+
+Several factors constrain the scope and generalizability of this analysis. Spring PetClinic is a relatively small demonstration application; larger production systems may exhibit different characteristics and challenges. The analysis focused on technical quality dimensions accessible to automated tools; user experience, business logic correctness, and operational concerns received limited attention. Testing occurred in development environments; production deployment introduces additional variables affecting system behavior.
+
+The tool selection, while representative, does not exhaust available options. Alternative tools might produce different findings or enable additional analysis dimensions. The metrics chosen, though aligned with industry practice, represent particular perspectives on quality that may not capture all relevant attributes for every application context.
+
+\subsection{Future Work Directions}
+
+Several extensions would enhance and expand upon this analysis.
+
+In the short term, frontend testing using Selenium or Cypress would address UI coverage currently outside scope. Integration testing expansion would validate controller-service-repository interaction flows. Load testing with JMeter or Gatling would characterize system behavior under concurrent access. Chaos engineering experiments would assess resilience under failure conditions.
+
+In the longer term, comparative studies across multiple Spring Boot applications would assess finding generalizability. Machine learning approaches to test generation might produce more semantically meaningful tests than current random-based methods. Runtime monitoring implementation would extend quality assessment from development into production operation. Cost-benefit analysis would quantify return on investment for different testing strategies, informing resource allocation decisions.
+
+\subsection{Final Remarks}
+
+Software dependability encompasses multiple interrelated quality attributes requiring systematic, multi-dimensional evaluation. This project demonstrated that combining automated analysis tools with disciplined methodology yields comprehensive quality assessment for real-world applications. The techniques and infrastructure developed provide lasting value beyond the immediate findings, establishing continuous quality monitoring that guards against regression.
+
+The Spring PetClinic analysis confirms that high-quality software results from intentional engineering practice. The application's excellent metrics reflect deliberate attention to testing, code organization, and development process by its maintainers. This standard of quality, achievable through the tools and approaches documented here, should serve as aspiration for software projects generally.
+
+\vspace{1cm}
+
+\noindent\textbf{Project Resources}
+
+\vspace{0.3cm}
+\noindent\textbf{Repository}: \url{https://github.com/mariocelzo/petclinic-dependability-analysis}
+
+\vspace{0.2cm}
+\noindent\textbf{SonarCloud}: \url{https://sonarcloud.io/project/overview?id=mariocelzo_petclinic-dependability-analysis}
+
+\vspace{0.2cm}
+\noindent\textbf{DockerHub}: \url{https://hub.docker.com/r/wario03/petclinic-dependability}
