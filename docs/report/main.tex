@@ -57,6 +57,29 @@
     captionpos=b
 }
 
+% Define YAML language for listings
+\lstdefinelanguage{YAML}{
+    keywords={true,false,null,y,n},
+    sensitive=false,
+    comment=[l]{\#},
+    morecomment=[s]{/*}{*/},
+    morestring=[b]',
+    morestring=[b]"
+}
+
+% Define Dockerfile language for listings
+\lstdefinelanguage{Dockerfile}{
+    keywords={FROM,RUN,CMD,LABEL,MAINTAINER,EXPOSE,ENV,ADD,COPY,ENTRYPOINT,VOLUME,USER,WORKDIR,ARG,ONBUILD,STOPSIGNAL,HEALTHCHECK,SHELL,AS},
+    sensitive=false,
+    comment=[l]{\#},
+    morestring=[b]',
+    morestring=[b]"
+}
+
+% Fix fancyhdr warning
+\setlength{\headheight}{14.5pt}
+\addtolength{\topmargin}{-2.5pt}
+
 % ============================================
 % HYPERLINKS
 % ============================================
