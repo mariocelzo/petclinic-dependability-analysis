@@ -18,12 +18,12 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Compile LaTeX document
-        uses: xu-cheng/latex-action@v3
+        uses: dante-ev/latex-action@latest
         with:
           root_file: main.tex
           working_directory: docs/report
-          latexmk_use_xelatex: false
-          latexmk_shell_escape: true
+          compiler: pdflatex
+          args: -interaction=nonstopmode -shell-escape
 
       - name: Upload PDF as artifact
         uses: actions/upload-artifact@v4
