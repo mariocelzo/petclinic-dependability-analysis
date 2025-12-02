@@ -50,4 +50,42 @@ jobs:
 
       - name: Image digest
         run: echo "Image pushed with digest ${{ steps.docker_build.outputs.digest }}"
-# Docker Build Trigger - Tue Dec  2 13:27:03 CET 2025
+
+      # ============================================
+      # Test Docker Container
+      # ============================================
+      - name: Run container for testing
+        run: |
+          docker run -d --name petclinic-test -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/petclinic-dependability:latest
+          echo "Container started, waiting for application to be ready..."
+
+      - name: Wait for application startup
+        run: |
+          echo "Waiting 45 seconds for Spring Boot to start..."
+          sleep 45
+
+      - name: Health check
+        run: |
+          echo "Checking application health..."
+          for i in {1..10}; do
+            if curl -f http://localhost:8080/actuator/health; then
+              echo ""
+              echo "✅ Health check passed!"
+              exit 0
+            fi
+            echo "Attempt $i failed, waiting 5 seconds..."
+            sleep 5
+          done
+          echo "❌ Health check failed after 10 attempts"
+          exit 1
+
+      - name: Show container logs
+        if: always()
+        run: docker logs petclinic-test
+
+      - name: Stop and remove container
+        if: always()
+        run: |
+          docker stop petclinic-test || true
+          docker rm petclinic-test || true
+
