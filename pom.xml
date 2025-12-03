@@ -497,8 +497,8 @@
           <outputDirectory>${project.build.directory}/dependency-check</outputDirectory>
           <!-- Only fail on Critical CVEs (CVSS 10) - Medium CVEs are documented but don't fail build -->
           <failBuildOnCVSS>10</failBuildOnCVSS>
-          <!-- NVD API Key for faster downloads -->
-          <nvdApiKey>25ba2019-2e51-4630-b454-fdd77e72cfda</nvdApiKey>
+          <!-- NVD API Key from environment variable (set via GitHub Secrets in CI) -->
+          <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
           <nvdApiDelay>6000</nvdApiDelay>
           <suppressionFiles>
             <suppressionFile>dependency-check-suppressions.xml</suppressionFile>

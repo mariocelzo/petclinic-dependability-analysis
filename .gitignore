@@ -46,3 +46,13 @@ out/
 _site/
 *.css
 !petclinic.css
+
+### Security - Environment Files ###
+.env
+*.env
+.env.*
+!.env.example
+docker/.env
+**/.env
+**/nvd-api-key.txt
+**/secrets.txt
