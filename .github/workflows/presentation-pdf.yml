@@ -3,27 +3,27 @@ name: Presentation PDF Build
 on:
   push:
     paths:
-      - 'docs/presentation/**'
-      - '.github/workflows/presentation-pdf.yml'
+      - "docs/presentation/**"
+      - ".github/workflows/presentation-pdf.yml"
   workflow_dispatch:
 
 jobs:
   build-presentation:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-    
-    - name: Compile LaTeX Presentation
-      uses: xu-cheng/latex-action@v3
-      with:
-        working_directory: docs/presentation
-        root_file: slides.tex
-        latexmk_use_xelatex: false
-    
-    - name: Upload Presentation PDF
-      uses: actions/upload-artifact@v4
-      with:
-        name: presentation-slides
-        path: docs/presentation/slides.pdf
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Compile LaTeX Presentation
+        uses: xu-cheng/latex-action@v3
+        with:
+          working_directory: docs/presentation
+          root_file: slides.tex
+          latexmk_use_xelatex: false
+
+      - name: Upload Presentation PDF
+        uses: actions/upload-artifact@v4
+        with:
+          name: presentation-slides
+          path: docs/presentation/slides.pdf
