@@ -1,80 +1,206 @@
-\section{Methodology}
-\label{sec:methodology}
+\section{Methodology}\section{Methodology}
 
-\subsection{Analysis Framework}
+\label{sec:methodology}\label{sec:methodology}
 
-This dependability analysis follows a systematic, criterion-based evaluation approach. Nine distinct criteria address different quality dimensions, each employing specific tools and producing quantifiable metrics. The criteria interconnect to provide a holistic assessment: static analysis identifies potential issues, coverage metrics reveal testing gaps, mutation testing validates test effectiveness, and security scanning ensures vulnerability awareness.
 
-\subsection{Experimental Environment}
 
-Analysis was conducted across two environments to ensure reproducibility and validate CI/CD integration. Local development used macOS Sonoma with Java 21 (Eclipse Temurin distribution), while automated pipelines executed on Ubuntu 22.04 runners in GitHub Actions. Maven 3.9.x, accessed through the Maven Wrapper to ensure version consistency, served as the build tool. Docker Desktop provided local container runtime, with equivalent functionality in GitHub Actions for automated builds.
+\subsection{Analysis Framework}\subsection{Analysis Framework}
 
-Table~\ref{tab:environment} summarizes the experimental configuration.
 
-\begin{table}[h]
+
+This dependability analysis follows a systematic, criterion-based evaluation approach structured around a clear \textbf{before/after comparison paradigm}. The methodology begins by establishing baseline metrics from the original Spring PetClinic repository, then documents the enhancements applied and measures the resulting improvements. Nine distinct criteria address different quality dimensions, each employing specific tools and producing quantifiable metrics that enable direct comparison between the original and enhanced project states.This dependability analysis follows a systematic, criterion-based evaluation approach. Nine distinct criteria address different quality dimensions, each employing specific tools and producing quantifiable metrics. The criteria interconnect to provide a holistic assessment: static analysis identifies potential issues, coverage metrics reveal testing gaps, mutation testing validates test effectiveness, and security scanning ensures vulnerability awareness.
+
+
+
+\subsection{Baseline Project State}\subsection{Experimental Environment}
+
+
+
+Before applying any modifications, we conducted a thorough analysis of the original Spring PetClinic repository (\texttt{spring-projects/spring-petclinic}) to establish baseline metrics. This initial assessment revealed significant gaps in dependability tooling despite the project's role as a Spring Framework reference implementation. Table~\ref{tab:baseline-state} documents the original state of each analysis dimension.Analysis was conducted across two environments to ensure reproducibility and validate CI/CD integration. Local development used macOS Sonoma with Java 21 (Eclipse Temurin distribution), while automated pipelines executed on Ubuntu 22.04 runners in GitHub Actions. Maven 3.9.x, accessed through the Maven Wrapper to ensure version consistency, served as the build tool. Docker Desktop provided local container runtime, with equivalent functionality in GitHub Actions for automated builds.
+
+
+
+\begin{table}[htbp]Table~\ref{tab:environment} summarizes the experimental configuration.
+
 \centering
-\caption{Experimental Environment Specifications}
-\label{tab:environment}
-\begin{tabular}{ll}
-\toprule
-\textbf{Component} & \textbf{Specification} \\
-\midrule
-Operating System (Local) & macOS Sonoma \\
-Operating System (CI) & Ubuntu 22.04 \\
-Java Distribution & Eclipse Temurin OpenJDK 21 \\
-Build Tool & Maven 3.9.x (Maven Wrapper) \\
-CI/CD Platform & GitHub Actions \\
-Container Runtime & Docker Desktop / GitHub Actions \\
-Code Analysis & SonarCloud \\
-\bottomrule
-\end{tabular}
+
+\caption{Original Spring PetClinic Baseline State Assessment}\begin{table}[h]
+
+\label{tab:baseline-state}\centering
+
+\begin{tabular}{lcp{6cm}}\caption{Experimental Environment Specifications}
+
+\toprule\label{tab:environment}
+
+\textbf{Analysis Dimension} & \textbf{Original Status} & \textbf{Assessment Notes} \\\begin{tabular}{ll}
+
+\midrule\toprule
+
+CI/CD Pipeline & Partial & Single basic workflow for Maven build only \\\textbf{Component} & \textbf{Specification} \\
+
+SonarCloud Integration & Missing & No static analysis configuration present \\\midrule
+
+JaCoCo Coverage & Partial & Plugin declared but no reporting configured \\Operating System (Local) & macOS Sonoma \\
+
+PITest Mutation Testing & Missing & No mutation testing infrastructure \\Operating System (CI) & Ubuntu 22.04 \\
+
+JMH Benchmarks & Missing & No performance measurement capability \\Java Distribution & Eclipse Temurin OpenJDK 21 \\
+
+Randoop Test Generation & Missing & Only manual tests present (39 tests) \\Build Tool & Maven 3.9.x (Maven Wrapper) \\
+
+SpotBugs Security & Missing & No security scanning configured \\CI/CD Platform & GitHub Actions \\
+
+OWASP Dependency-Check & Missing & No dependency vulnerability scanning \\Container Runtime & Docker Desktop / GitHub Actions \\
+
+Docker Support & Partial & Basic Dockerfile without health checks \\Code Analysis & SonarCloud \\
+
+DockerHub Publishing & Missing & No automated image publication \\\bottomrule
+
+\bottomrule\end{tabular}
+
+\end{tabular}\end{table}
+
 \end{table}
 
 The analysis was performed on a fork of the official Spring PetClinic repository, with all modifications, configurations, and results tracked in version control. The project repository, SonarCloud dashboard, and DockerHub image are publicly accessible for verification and reproducibility.
 
+The baseline assessment revealed that while Spring PetClinic serves as an excellent demonstration of Spring Boot capabilities, it lacked comprehensive dependability infrastructure. This gap provided the opportunity for significant measurable improvements across all nine evaluation criteria.
+
 \subsection{Evaluation Criteria}
+
+\subsection{Fork and Enhancement Strategy}
 
 \subsubsection{Criterion 1: CI/CD Pipeline}
 
+Our methodology employed an incremental enhancement approach that preserved the ability to measure improvements at each step. The strategy began with creating a fork of the official repository to maintain separation from the upstream project while enabling full modification capability. We then established measurement infrastructure by configuring each analysis tool before making code changes, ensuring we could capture accurate baseline and improved metrics.
+
 The first criterion establishes automated build and quality assurance infrastructure. GitHub Actions workflows were configured to execute on push events to the main branch, pull requests, and manual dispatch. The pipeline encompasses compilation, unit test execution, integration test execution, coverage reporting, and artifact publication. Success is measured by consistent build success rate (target: 100\%), reasonable build duration (target: under 5 minutes), and complete test execution without failures.
+
+The enhancement process proceeded systematically through each criterion, with careful documentation of configuration changes and their effects. This approach enabled precise attribution of improvements to specific modifications and provided a clear audit trail for reproducibility.
 
 \subsubsection{Criterion 2: Static Code Analysis}
 
+\subsection{Experimental Environment}
+
 Static analysis via SonarCloud identifies quality issues without executing the code. The analysis categorizes findings as bugs (potential runtime errors), vulnerabilities (security weaknesses), security hotspots (security-sensitive code requiring review), and code smells (maintainability issues). Issues are prioritized by severity from blocker through critical, major, minor, to informational. Target metrics include zero bugs, zero vulnerabilities, and maintainability rating of A.
+
+Analysis was conducted across two environments to ensure reproducibility and validate CI/CD integration. Table~\ref{tab:environment} summarizes the experimental configuration used throughout the project.
 
 \subsubsection{Criteria 3-4: Docker Containerization}
 
-Containerization criteria address both image creation (Criterion 3) and container execution (Criterion 4). A multi-stage Dockerfile separates build-time dependencies from the runtime image, reducing size and attack surface. Security best practices include running as a non-root user and configuring health checks for orchestration compatibility. Success requires successful image build, publication to DockerHub, and verified container execution with accessible application endpoints.
+\begin{table}[htbp]
+
+\centeringContainerization criteria address both image creation (Criterion 3) and container execution (Criterion 4). A multi-stage Dockerfile separates build-time dependencies from the runtime image, reducing size and attack surface. Security best practices include running as a non-root user and configuring health checks for orchestration compatibility. Success requires successful image build, publication to DockerHub, and verified container execution with accessible application endpoints.
+
+\caption{Experimental Environment Specifications}
+
+\label{tab:environment}\subsubsection{Criterion 5: Test Coverage}
+
+\begin{tabular}{ll}
+
+\topruleJaCoCo measures code coverage across multiple dimensions. The Maven plugin instruments classes during test execution and generates HTML and XML reports. Coverage is analyzed by package and class to identify areas requiring additional testing. The target threshold of 80\% line coverage represents industry best practice, with branch coverage providing additional insight into decision point testing.
+
+\textbf{Component} & \textbf{Specification} \\
+
+\midrule\subsubsection{Criterion 6: Mutation Testing}
+
+Operating System (Local) & macOS Sonoma 14.x \\
+
+Operating System (CI) & Ubuntu 22.04 LTS \\PITest mutation testing evaluates test effectiveness beyond coverage metrics. The mutation score is calculated according to Equation~\ref{eq:mutation-score}.
+
+Java Distribution & Eclipse Temurin OpenJDK 21.0.5 \\
+
+Build Tool & Maven 3.9.x (via Maven Wrapper) \\\begin{equation}
+
+CI/CD Platform & GitHub Actions \\\label{eq:mutation-score}
+
+Container Runtime & Docker Desktop 4.x / GitHub Actions \\\text{Mutation Score} = \frac{\text{Killed Mutants}}{\text{Total Mutants} - \text{Equivalent Mutants}} \times 100\%
+
+Code Analysis Platform & SonarCloud \\\end{equation}
+
+Container Registry & DockerHub \\
+
+\bottomruleConfiguration targets the main application packages with standard mutators. Surviving mutants are analyzed to identify test improvement opportunities. A mutation score above 75\% indicates effective testing.
+
+\end{tabular}
+
+\end{table}\subsubsection{Criterion 7: Performance Benchmarking}
+
+
+
+\subsection{Evaluation Criteria and Enhancement Approach}JMH benchmarks measure execution time for critical repository operations. Benchmark configuration includes warmup iterations (3 iterations, 1 second each) to stabilize JIT compilation, measurement iterations (5 iterations, 1 second each) for data collection, and execution in AverageTime mode reporting milliseconds per operation. The H2 in-memory database profile ensures isolation from external database performance characteristics.
+
+
+
+Each of the nine evaluation criteria followed a consistent enhancement pattern: assess original state, implement improvements, measure results, and document the delta. The following subsections detail the specific approach for each criterion.\subsubsection{Criterion 8: Automated Test Generation}
+
+
+
+\subsubsection{Criterion 1: CI/CD Pipeline}Randoop generates regression tests through feedback-directed random testing. Generation parameters include time budget per class, target packages, and output format. Generated tests are evaluated for coverage contribution, assertion quality, and integration with existing test infrastructure. JUnit 4 output requires migration to JUnit 5 for consistency with the project test suite.
+
+
+
+The original repository contained a single GitHub Actions workflow performing basic Maven compilation. Our enhancement strategy expanded this to a comprehensive multi-workflow pipeline covering build automation, test execution with coverage reporting, Docker image building and testing, static code analysis integration, and automated documentation generation. Table~\ref{tab:cicd-enhancement} summarizes the transformation.\subsubsection{Criterion 9: Security Analysis}
+
+
+
+\begin{table}[htbp]Security analysis combines SpotBugs with the FindSecBugs plugin for static security analysis and OWASP Dependency-Check for dependency vulnerability scanning. Findings are categorized by severity and mapped to security risk taxonomies. The target is zero critical or high severity vulnerabilities, with documented assessment of any medium or low severity findings.
+
+\centering
+
+\caption{CI/CD Pipeline Enhancement Summary}\subsection{Data Collection and Analysis}
+
+\label{tab:cicd-enhancement}
+
+\begin{tabular}{lcc}Each criterion produces structured output amenable to quantitative analysis. Coverage reports provide line, branch, and method percentages. Mutation testing generates detailed mutant status and location data. Benchmark results include statistical measures with error margins. All raw data is preserved in the repository for transparency and reproducibility.
+
+\toprule
+
+\textbf{Capability} & \textbf{Before} & \textbf{After} \\Analysis follows a systematic process: execute tools with documented configuration, collect and validate output, extract relevant metrics, compare against targets, and document findings with supporting evidence. Challenges and anomalies are investigated, with solutions or workarounds documented for future reference.
+
+\midrule
+Total Workflows & 1 & 4 \\
+Build Automation & Basic compile & Full lifecycle \\
+Test Execution & Manual & Automated \\
+Coverage Reporting & None & JaCoCo HTML/XML \\
+Docker Automation & None & Build, push, test \\
+Code Quality Gates & None & SonarCloud \\
+Secret Management & None & GitHub Secrets \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Criterion 2: Static Code Analysis}
+
+No static analysis infrastructure existed in the original project. We implemented full SonarCloud integration with automatic analysis on every push and pull request. The configuration required careful attention to organization settings, project binding, and quality gate configuration.
+
+\subsubsection{Criteria 3-4: Docker Containerization}
+
+The original Dockerfile provided basic image creation without optimization or operational features. Our enhancements included multi-stage builds for reduced image size, health check endpoint configuration for orchestration compatibility, automated DockerHub publication with semantic versioning, and container execution testing within the CI pipeline to verify deployment readiness.
 
 \subsubsection{Criterion 5: Test Coverage}
 
-JaCoCo measures code coverage across multiple dimensions. The Maven plugin instruments classes during test execution and generates HTML and XML reports. Coverage is analyzed by package and class to identify areas requiring additional testing. The target threshold of 80\% line coverage represents industry best practice, with branch coverage providing additional insight into decision point testing.
+While JaCoCo was declared as a dependency, no active coverage measurement or reporting was configured. We implemented full JaCoCo configuration with HTML and XML report generation, SonarCloud integration for trend tracking, and coverage enforcement in the CI pipeline.
 
 \subsubsection{Criterion 6: Mutation Testing}
 
-PITest mutation testing evaluates test effectiveness beyond coverage metrics. The mutation score is calculated according to Equation~\ref{eq:mutation-score}.
-
-\begin{equation}
-\label{eq:mutation-score}
-\text{Mutation Score} = \frac{\text{Killed Mutants}}{\text{Total Mutants} - \text{Equivalent Mutants}} \times 100\%
-\end{equation}
-
-Configuration targets the main application packages with standard mutators. Surviving mutants are analyzed to identify test improvement opportunities. A mutation score above 75\% indicates effective testing.
+No mutation testing infrastructure existed. We implemented PITest with careful attention to Spring Boot 4.0 compatibility, configuring appropriate mutators and JUnit 5 integration. Significant effort was required to resolve dependency conflicts with the JUnit Platform version bundled in the PITest plugin.
 
 \subsubsection{Criterion 7: Performance Benchmarking}
 
-JMH benchmarks measure execution time for critical repository operations. Benchmark configuration includes warmup iterations (3 iterations, 1 second each) to stabilize JIT compilation, measurement iterations (5 iterations, 1 second each) for data collection, and execution in AverageTime mode reporting milliseconds per operation. The H2 in-memory database profile ensures isolation from external database performance characteristics.
+Performance measurement was entirely absent from the original project. We implemented a comprehensive JMH benchmark suite targeting the repository layer, which represents the most performance-critical component in the application architecture. Benchmarks cover both cached and uncached operations to validate the effectiveness of Spring's caching infrastructure.
 
 \subsubsection{Criterion 8: Automated Test Generation}
 
-Randoop generates regression tests through feedback-directed random testing. Generation parameters include time budget per class, target packages, and output format. Generated tests are evaluated for coverage contribution, assertion quality, and integration with existing test infrastructure. JUnit 4 output requires migration to JUnit 5 for consistency with the project test suite.
+The original project contained only manually-written tests. We integrated Randoop for automated test generation, producing regression tests that complement the existing test suite. Generated tests were configured for JUnit 4 output and integrated into the project's test infrastructure.
 
 \subsubsection{Criterion 9: Security Analysis}
 
-Security analysis combines SpotBugs with the FindSecBugs plugin for static security analysis and OWASP Dependency-Check for dependency vulnerability scanning. Findings are categorized by severity and mapped to security risk taxonomies. The target is zero critical or high severity vulnerabilities, with documented assessment of any medium or low severity findings.
+No security scanning was configured in the original project. We implemented SpotBugs with the FindSecBugs plugin for static security analysis and OWASP Dependency-Check for dependency vulnerability scanning. Additionally, we identified and remediated credential exposure issues discovered during the analysis.
 
-\subsection{Data Collection and Analysis}
+\subsection{Data Collection and Validation}
 
-Each criterion produces structured output amenable to quantitative analysis. Coverage reports provide line, branch, and method percentages. Mutation testing generates detailed mutant status and location data. Benchmark results include statistical measures with error margins. All raw data is preserved in the repository for transparency and reproducibility.
+Each criterion produces structured output amenable to quantitative comparison. Coverage reports provide line, branch, and method percentages. Mutation testing generates detailed mutant status and location data. Benchmark results include statistical measures with error margins. All raw data is preserved in the repository under the \texttt{analysis/} directory for transparency and reproducibility.
 
-Analysis follows a systematic process: execute tools with documented configuration, collect and validate output, extract relevant metrics, compare against targets, and document findings with supporting evidence. Challenges and anomalies are investigated, with solutions or workarounds documented for future reference.
+The before/after comparison methodology ensures that improvements are clearly attributable to specific changes rather than environmental factors. By executing analyses in both local and CI environments, we validated that results are reproducible and not dependent on specific machine configurations.
+

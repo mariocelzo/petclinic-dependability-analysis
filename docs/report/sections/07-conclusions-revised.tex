@@ -5,6 +5,28 @@
 
 This project conducted a comprehensive dependability analysis of the Spring PetClinic application, evaluating nine criteria spanning code quality, test effectiveness, performance, security, and deployment readiness. The analysis employed industry-standard tools including SonarCloud, JaCoCo, PITest, JMH, Randoop, SpotBugs, and Docker, integrated into a fully automated CI/CD pipeline using GitHub Actions.
 
+The before/after comparison methodology adopted throughout this analysis clearly demonstrates the transformation achieved. Table~\ref{tab:final-summary} consolidates the key improvements across all dimensions.
+
+\begin{table}[htbp]
+\centering
+\caption{Final Before/After Summary}
+\label{tab:final-summary}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Dimension} & \textbf{Original State} & \textbf{Final State} & \textbf{Delta} \\
+\midrule
+CI/CD Workflows & 1 & 4 & +300\% \\
+Code Coverage & Unmeasured & 91.9\% & New metric \\
+Mutation Score & Not available & 85\% & New metric \\
+SonarCloud Grade & Not integrated & Triple-A & New integration \\
+Test Cases & 39 & 556 & +1,326\% \\
+Performance Benchmarks & 0 & 8 & New capability \\
+Security Issues & Unknown & 0 High/Critical & Verified \\
+Docker Health Check & Missing & Implemented & New feature \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 The findings demonstrate that Spring PetClinic exhibits excellent software quality characteristics suitable for its role as a Spring Framework reference implementation. All evaluation criteria were successfully completed with metrics meeting or exceeding targets. The codebase achieved Triple-A SonarCloud rating with zero detected bugs or vulnerabilities, 91.9\% test coverage with 85\% mutation kill rate, sub-millisecond performance for all benchmarked operations, and production-ready containerization with automated deployment.
 
 \subsection{Technical Lessons Learned}
