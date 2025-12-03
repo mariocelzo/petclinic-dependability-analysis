@@ -88,4 +88,3 @@ jobs:
         run: |
           docker stop petclinic-test || true
           docker rm petclinic-test || true
-

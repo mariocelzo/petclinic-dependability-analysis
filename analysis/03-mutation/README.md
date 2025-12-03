@@ -7,6 +7,7 @@ Il **Mutation Testing** è una tecnica di testing del software che valuta la qua
 ### Perché PITest?
 
 PITest è il mutation testing tool più utilizzato per Java perché:
+
 - ⚡ **Veloce**: Usa bytecode mutation invece di source code mutation
 - 🎯 **Preciso**: Identifica esattamente quali test rilevano quali mutazioni
 - 🔌 **Integrato**: Supporto nativo per Maven, Gradle, JUnit 5
@@ -90,6 +91,7 @@ PITest è il mutation testing tool più utilizzato per Java perché:
 ### Problema 1: Java 21 Compatibility
 
 **Errore**:
+
 ```
 Coverage generator Minion exited abnormally due to UNKNOWN_ERROR
 ```
@@ -97,6 +99,7 @@ Coverage generator Minion exited abnormally due to UNKNOWN_ERROR
 **Causa**: PITest richiede accesso a moduli Java interni.
 
 **Soluzione**: Aggiungere JVM args:
+
 ```xml
 <jvmArgs>
     <jvmArg>--add-opens=java.base/java.lang=ALL-UNNAMED</jvmArg>
@@ -108,14 +111,16 @@ Coverage generator Minion exited abnormally due to UNKNOWN_ERROR
 ### Problema 2: JUnit Platform Version Mismatch
 
 **Errore**:
+
 ```
-JUnitException: OutputDirectoryProvider not available; probably due to 
+JUnitException: OutputDirectoryProvider not available; probably due to
 unaligned versions of junit-platform-engine and junit-platform-launcher
 ```
 
 **Causa**: Spring Boot 4.0.0-M3 usa JUnit Platform 1.13.4, ma pitest-junit5-plugin include versioni precedenti.
 
 **Soluzione**: Escludere le dipendenze transitive e specificare le versioni corrette:
+
 ```xml
 <dependency>
     <groupId>org.pitest</groupId>
@@ -138,6 +143,7 @@ unaligned versions of junit-platform-engine and junit-platform-launcher
 ### Problema 3: Mutator Names Changed
 
 **Errore**:
+
 ```
 Mutator or group RETURN_VALS is unknown
 ```
@@ -145,6 +151,7 @@ Mutator or group RETURN_VALS is unknown
 **Causa**: Nelle versioni recenti di PITest, `RETURN_VALS` è stato sostituito da mutatori specifici.
 
 **Soluzione**: Usare i nuovi nomi:
+
 ```xml
 <mutators>
     <mutator>EMPTY_RETURNS</mutator>
@@ -160,16 +167,19 @@ Mutator or group RETURN_VALS is unknown
 ## Esecuzione
 
 ### Comando Base
+
 ```bash
 ./mvnw org.pitest:pitest-maven:mutationCoverage
 ```
 
 ### Con Skip Test Compile (se già compilato)
+
 ```bash
 ./mvnw org.pitest:pitest-maven:mutationCoverage -DskipTests=false
 ```
 
 ### Solo su Package Specifico
+
 ```bash
 ./mvnw org.pitest:pitest-maven:mutationCoverage \
     -DtargetClasses="org.springframework.samples.petclinic.owner.*"
@@ -181,17 +191,18 @@ Mutator or group RETURN_VALS is unknown
 
 ### Stati delle Mutazioni
 
-| Stato | Significato | Azione |
-|-------|-------------|--------|
-| **KILLED** | Test ha rilevato la mutazione | ✅ Desiderato |
-| **SURVIVED** | Test NON ha rilevato la mutazione | ⚠️ Migliorare test |
-| **NO_COVERAGE** | Nessun test esegue quel codice | ⚠️ Aggiungere test |
-| **TIMED_OUT** | Mutazione causa loop infinito | ✅ Rilevata indirettamente |
-| **NON_VIABLE** | Mutazione non compilabile | ℹ️ Ignorare |
+| Stato           | Significato                       | Azione                     |
+| --------------- | --------------------------------- | -------------------------- |
+| **KILLED**      | Test ha rilevato la mutazione     | ✅ Desiderato              |
+| **SURVIVED**    | Test NON ha rilevato la mutazione | ⚠️ Migliorare test         |
+| **NO_COVERAGE** | Nessun test esegue quel codice    | ⚠️ Aggiungere test         |
+| **TIMED_OUT**   | Mutazione causa loop infinito     | ✅ Rilevata indirettamente |
+| **NON_VIABLE**  | Mutazione non compilabile         | ℹ️ Ignorare                |
 
 ### Metriche Chiave
 
 1. **Mutation Coverage** = Killed / (Total - NonViable)
+
    - Target: >80%
 
 2. **Test Strength** = Killed / (Killed + Survived)
@@ -202,12 +213,14 @@ Mutator or group RETURN_VALS is unknown
 ## Mutatori Disponibili
 
 ### Gruppo DEFAULT
+
 - `CONDITIONALS_BOUNDARY`: `<` → `<=`
 - `NEGATE_CONDITIONALS`: `==` → `!=`
 - `MATH`: `+` → `-`
 - `INCREMENTS`: `i++` → `i--`
 
 ### Gruppo RETURNS
+
 - `EMPTY_RETURNS`: Ritorna collezioni vuote
 - `FALSE_RETURNS`: `true` → `false`
 - `TRUE_RETURNS`: `false` → `true`
@@ -215,6 +228,7 @@ Mutator or group RETURN_VALS is unknown
 - `PRIMITIVE_RETURNS`: `1` → `0`
 
 ### Gruppo EXPERIMENTAL
+
 - `EXPERIMENTAL_ARGUMENT_PROPAGATION`
 - `EXPERIMENTAL_BIG_DECIMAL`
 - `EXPERIMENTAL_MEMBER_VARIABLE`
@@ -235,6 +249,7 @@ target/pit-reports/
 ```
 
 ### Aprire il Report
+
 ```bash
 open target/pit-reports/index.html
 ```
@@ -244,6 +259,7 @@ open target/pit-reports/index.html
 ## Integrazione CI/CD
 
 ### GitHub Actions
+
 ```yaml
 - name: Run PITest Mutation Testing
   run: ./mvnw org.pitest:pitest-maven:mutationCoverage
@@ -256,6 +272,7 @@ open target/pit-reports/index.html
 ```
 
 ### Threshold Check
+
 ```xml
 <configuration>
     <mutationThreshold>80</mutationThreshold>
@@ -273,4 +290,4 @@ open target/pit-reports/index.html
 
 ---
 
-*Configurazione testata con Spring Boot 4.0.0-M3, Java 21, PITest 1.17.1*
+_Configurazione testata con Spring Boot 4.0.0-M3, Java 21, PITest 1.17.1_

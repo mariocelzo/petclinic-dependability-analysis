@@ -23,28 +23,29 @@ Il **Mutation Testing** è una tecnica avanzata per valutare la qualità dei tes
 
 ### Metriche Principali
 
-| Metrica | Valore | Target | Stato |
-|---------|--------|--------|-------|
-| **Mutazioni Generate** | 55 | - | ✅ |
-| **Mutazioni Killed** | 47 | >80% | ✅ 85% |
-| **Mutazioni Survived** | 3 | <10% | ✅ 5.5% |
-| **No Coverage** | 5 | <10% | ✅ 9% |
-| **Test Strength** | 94% | >90% | ✅ |
-| **Line Coverage** | 98% | >95% | ✅ |
+| Metrica                | Valore | Target | Stato   |
+| ---------------------- | ------ | ------ | ------- |
+| **Mutazioni Generate** | 55     | -      | ✅      |
+| **Mutazioni Killed**   | 47     | >80%   | ✅ 85%  |
+| **Mutazioni Survived** | 3      | <10%   | ✅ 5.5% |
+| **No Coverage**        | 5      | <10%   | ✅ 9%   |
+| **Test Strength**      | 94%    | >90%   | ✅      |
+| **Line Coverage**      | 98%    | >95%   | ✅      |
 
 ### Breakdown per Package
 
-| Package | Classi | Line Coverage | Mutation Coverage | Test Strength |
-|---------|--------|---------------|-------------------|---------------|
-| `petclinic.owner` | 8 | 98% (211/216) | 84% (41/49) | 93% (41/44) |
-| `petclinic.vet` | 3 | 100% (33/33) | 100% (6/6) | 100% (6/6) |
-| **TOTALE** | 11 | 98% (244/249) | 85% (47/55) | 94% (47/50) |
+| Package           | Classi | Line Coverage | Mutation Coverage | Test Strength |
+| ----------------- | ------ | ------------- | ----------------- | ------------- |
+| `petclinic.owner` | 8      | 98% (211/216) | 84% (41/49)       | 93% (41/44)   |
+| `petclinic.vet`   | 3      | 100% (33/33)  | 100% (6/6)        | 100% (6/6)    |
+| **TOTALE**        | 11     | 98% (244/249) | 85% (47/55)       | 94% (47/50)   |
 
 ---
 
 ## Analisi per Tipo di Mutatore
 
 ### 1. EmptyObjectReturnValsMutator
+
 - **Descrizione**: Sostituisce i valori di ritorno con collezioni vuote o stringhe vuote
 - **Generati**: 28
 - **Killed**: 27 (96%)
@@ -52,6 +53,7 @@ Il **Mutation Testing** è una tecnica avanzata per valutare la qualità dei tes
 - **Valutazione**: ✅ Eccellente
 
 ### 2. NullReturnValsMutator
+
 - **Descrizione**: Sostituisce i valori di ritorno con `null`
 - **Generati**: 15
 - **Killed**: 10 (67%)
@@ -60,6 +62,7 @@ Il **Mutation Testing** è una tecnica avanzata per valutare la qualità dei tes
 - **Valutazione**: ⚠️ Buono, ma 5 mutanti non coperti
 
 ### 3. NegateConditionalsMutator
+
 - **Descrizione**: Inverte le condizioni booleane (es. `==` → `!=`)
 - **Generati**: 10
 - **Killed**: 9 (90%)
@@ -67,12 +70,14 @@ Il **Mutation Testing** è una tecnica avanzata per valutare la qualità dei tes
 - **Valutazione**: ✅ Buono
 
 ### 4. BooleanFalseReturnValsMutator
+
 - **Descrizione**: Sostituisce `return true` con `return false`
 - **Generati**: 1
 - **Killed**: 1 (100%)
 - **Valutazione**: ✅ Eccellente
 
 ### 5. BooleanTrueReturnValsMutator
+
 - **Descrizione**: Sostituisce `return false` con `return true`
 - **Generati**: 1
 - **Killed**: 0 (0%)
@@ -84,6 +89,7 @@ Il **Mutation Testing** è una tecnica avanzata per valutare la qualità dei tes
 ## Mutazioni Sopravvissute (SURVIVED) - Analisi Dettagliata
 
 ### 1. `Visit.getDescription()` - EmptyObjectReturnValsMutator
+
 **File**: `src/main/java/org/springframework/samples/petclinic/owner/Visit.java`  
 **Linea**: 62
 
@@ -99,6 +105,7 @@ public String getDescription() {
 **Problema**: I test non verificano che la descrizione restituita sia quella effettivamente impostata.
 
 **Soluzione Proposta**:
+
 ```java
 @Test
 void shouldReturnCorrectDescription() {
@@ -109,6 +116,7 @@ void shouldReturnCorrectDescription() {
 ```
 
 ### 2. `PetValidator.supports()` - BooleanTrueReturnValsMutator
+
 **File**: `src/main/java/org/springframework/samples/petclinic/owner/PetValidator.java`  
 **Linea**: 61
 
@@ -125,6 +133,7 @@ public boolean supports(Class<?> clazz) {
 **Problema**: I test non verificano che il validatore rifiuti classi non-Pet.
 
 **Soluzione Proposta**:
+
 ```java
 @Test
 void shouldNotSupportNonPetClasses() {
@@ -135,6 +144,7 @@ void shouldNotSupportNonPetClasses() {
 ```
 
 ### 3. Condizione in codice owner - NegateConditionalsMutator
+
 **Problema**: Una condizione negata non è stata rilevata dai test.
 
 **Analisi**: Richiede ispezione del report HTML dettagliato.
@@ -145,8 +155,8 @@ void shouldNotSupportNonPetClasses() {
 
 Sono state identificate **5 mutazioni** in codice non raggiunto dai test:
 
-| Classe | Metodo | Tipo |
-|--------|--------|------|
+| Classe          | Metodo         | Tipo                  |
+| --------------- | -------------- | --------------------- |
 | Owner/Pet/Visit | getter methods | NullReturnValsMutator |
 
 **Raccomandazione**: Questi metodi sono probabilmente getter semplici usati solo in contesti specifici. Valutare se aggiungere test unitari o se la copertura tramite test di integrazione è sufficiente.
@@ -155,28 +165,29 @@ Sono state identificate **5 mutazioni** in codice non raggiunto dai test:
 
 ## Confronto con Copertura Tradizionale
 
-| Metrica | JaCoCo | PITest | Interpretazione |
-|---------|--------|--------|-----------------|
-| Line Coverage | 91.9% | 98% | PITest analizza solo classi target |
-| Branch Coverage | 73.3% | - | Non confrontabile |
-| Mutation Coverage | - | 85% | Qualità effettiva dei test |
-| Test Strength | - | 94% | Capacità di rilevare bug |
+| Metrica           | JaCoCo | PITest | Interpretazione                    |
+| ----------------- | ------ | ------ | ---------------------------------- |
+| Line Coverage     | 91.9%  | 98%    | PITest analizza solo classi target |
+| Branch Coverage   | 73.3%  | -      | Non confrontabile                  |
+| Mutation Coverage | -      | 85%    | Qualità effettiva dei test         |
+| Test Strength     | -      | 94%    | Capacità di rilevare bug           |
 
 ### Insight
+
 La **line coverage del 91.9%** con JaCoCo è alta, ma il **mutation coverage dell'85%** rivela che circa il 15% delle modifiche al codice non verrebbe rilevato dai test. Questo evidenzia il valore aggiunto del mutation testing.
 
 ---
 
 ## Tempi di Esecuzione
 
-| Fase | Durata |
-|------|--------|
-| Pre-scan mutazioni | < 1 secondo |
-| Scan classpath | < 1 secondo |
-| Coverage e analisi dipendenze | 5 secondi |
-| Build mutation tests | < 1 secondo |
-| Esecuzione mutation analysis | 21 secondi |
-| **TOTALE** | 27 secondi |
+| Fase                          | Durata      |
+| ----------------------------- | ----------- |
+| Pre-scan mutazioni            | < 1 secondo |
+| Scan classpath                | < 1 secondo |
+| Coverage e analisi dipendenze | 5 secondi   |
+| Build mutation tests          | < 1 secondo |
+| Esecuzione mutation analysis  | 21 secondi  |
+| **TOTALE**                    | 27 secondi  |
 
 **Note**: 80 test eseguiti, media 1.45 test per mutazione.
 
@@ -185,6 +196,7 @@ La **line coverage del 91.9%** con JaCoCo è alta, ma il **mutation coverage del
 ## Configurazione Utilizzata
 
 ### Mutatori Attivati
+
 ```xml
 <mutators>
     <mutator>CONDITIONALS_BOUNDARY</mutator>
@@ -200,10 +212,12 @@ La **line coverage del 91.9%** con JaCoCo è alta, ma il **mutation coverage del
 ```
 
 ### Classi Target
+
 - `org.springframework.samples.petclinic.owner.*`
 - `org.springframework.samples.petclinic.vet.*`
 
 ### Esclusioni
+
 - `PetClinicApplication` (main class)
 - `system.*` (configurazione)
 - `model.*` (entità base)
@@ -214,27 +228,30 @@ La **line coverage del 91.9%** con JaCoCo è alta, ma il **mutation coverage del
 ## Raccomandazioni
 
 ### Priorità Alta
+
 1. ✅ Aggiungere test per `Visit.getDescription()` che verifichi il valore restituito
 2. ✅ Aggiungere test per `PetValidator.supports()` con classi non-Pet
 
 ### Priorità Media
+
 3. ⚠️ Investigare le 5 mutazioni senza copertura
 4. ⚠️ Considerare l'estensione a package `system.*` e `service.*`
 
 ### Priorità Bassa
-5. 📋 Attivare mutatori aggiuntivi (EXPERIMENTAL_*) per analisi più approfondita
+
+5. 📋 Attivare mutatori aggiuntivi (EXPERIMENTAL\_\*) per analisi più approfondita
 6. 📋 Integrare PITest nella CI/CD pipeline
 
 ---
 
 ## Report Generati
 
-| File | Descrizione |
-|------|-------------|
-| `target/pit-reports/index.html` | Report HTML interattivo |
-| `target/pit-reports/mutations.xml` | Report XML per integrazione CI |
-| `target/pit-reports/org.springframework.samples.petclinic.owner/` | Dettagli package owner |
-| `target/pit-reports/org.springframework.samples.petclinic.vet/` | Dettagli package vet |
+| File                                                              | Descrizione                    |
+| ----------------------------------------------------------------- | ------------------------------ |
+| `target/pit-reports/index.html`                                   | Report HTML interattivo        |
+| `target/pit-reports/mutations.xml`                                | Report XML per integrazione CI |
+| `target/pit-reports/org.springframework.samples.petclinic.owner/` | Dettagli package owner         |
+| `target/pit-reports/org.springframework.samples.petclinic.vet/`   | Dettagli package vet           |
 
 ---
 
@@ -250,5 +267,5 @@ Le mutazioni sopravvissute identificano punti specifici dove i test possono esse
 
 ---
 
-*Report generato con PITest 1.17.1*  
-*Progetto: Spring PetClinic Dependability Analysis*
+_Report generato con PITest 1.17.1_  
+_Progetto: Spring PetClinic Dependability Analysis_
