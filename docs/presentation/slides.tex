@@ -1,0 +1,572 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+
+% ============================================
+% TEMA E COLORI
+% ============================================
+\usetheme{Madrid}
+\usecolortheme{whale}
+
+% Colori personalizzati UniSA
+\definecolor{unisablue}{RGB}{0,51,102}
+\definecolor{unisagold}{RGB}{204,153,0}
+\setbeamercolor{structure}{fg=unisablue}
+\setbeamercolor{title}{fg=white,bg=unisablue}
+\setbeamercolor{frametitle}{fg=white,bg=unisablue}
+
+% ============================================
+% PACCHETTI
+% ============================================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usepackage{fontawesome5}
+\usepackage{xcolor}
+
+% ============================================
+% INFO DOCUMENTO
+% ============================================
+\title[PetClinic Dependability]{Dependability Analysis of Spring PetClinic}
+\subtitle{Software Dependability Course Project}
+\author[M. Celzo]{Mario Celzo\\{\small Matricola: 0512118665}}
+\institute[UniSA]{Università degli Studi di Salerno\\Dipartimento di Informatica}
+\date{Anno Accademico 2024-2025}
+
+% ============================================
+% INIZIO DOCUMENTO
+% ============================================
+\begin{document}
+
+% ------------------------------------------
+% SLIDE 1: Titolo
+% ------------------------------------------
+\begin{frame}
+    \titlepage
+\end{frame}
+
+% ------------------------------------------
+% SLIDE 2: Agenda
+% ------------------------------------------
+\begin{frame}{Agenda}
+    \tableofcontents
+\end{frame}
+
+% ============================================
+\section{Introduzione}
+% ============================================
+
+% ------------------------------------------
+% SLIDE 3: Obiettivi del Progetto
+% ------------------------------------------
+\begin{frame}{Obiettivi del Progetto}
+    \begin{block}{Obiettivo Principale}
+        Analizzare la \textbf{dependability} di Spring PetClinic attraverso 9 criteri di valutazione, documentando i miglioramenti ottenuti con un approccio Before/After.
+    \end{block}
+    
+    \vspace{0.5cm}
+    
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{Progetto Analizzato:}
+        \begin{itemize}
+            \item Spring PetClinic
+            \item Java 21 + Spring Boot 4.0
+            \item Applicazione web reference
+        \end{itemize}
+        
+        \column{0.5\textwidth}
+        \textbf{Approccio:}
+        \begin{itemize}
+            \item Fork del repository originale
+            \item Analisi baseline (Before)
+            \item Enhancement sistematico (After)
+        \end{itemize}
+    \end{columns}
+\end{frame}
+
+% ------------------------------------------
+% SLIDE 4: I 9 Criteri di Valutazione
+% ------------------------------------------
+\begin{frame}{I 9 Criteri di Valutazione}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{clc}
+            \toprule
+            \textbf{\#} & \textbf{Criterio} & \textbf{Tool} \\
+            \midrule
+            1 & CI/CD Pipeline & GitHub Actions \\
+            2 & Static Code Analysis & SonarCloud \\
+            3 & Docker Image & DockerHub \\
+            4 & Container Testing & Health Check \\
+            5 & Code Coverage & JaCoCo \\
+            6 & Mutation Testing & PITest \\
+            7 & Performance Benchmarks & JMH \\
+            8 & Test Generation & Randoop \\
+            9 & Security Analysis & SpotBugs + OWASP \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+% ============================================
+\section{Baseline Analysis}
+% ============================================
+
+% ------------------------------------------
+% SLIDE 5: Stato Iniziale del Progetto
+% ------------------------------------------
+\begin{frame}{Stato Iniziale: Spring PetClinic Originale}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lcc}
+            \toprule
+            \textbf{Aspetto} & \textbf{Stato Originale} & \textbf{Valutazione} \\
+            \midrule
+            CI/CD Pipeline & 1 workflow base & \textcolor{orange}{Parziale} \\
+            Code Coverage & Non configurato & \textcolor{red}{Assente} \\
+            Mutation Testing & Non configurato & \textcolor{red}{Assente} \\
+            SonarCloud & Non integrato & \textcolor{red}{Assente} \\
+            Security Analysis & Non configurato & \textcolor{red}{Assente} \\
+            JMH Benchmarks & Non implementato & \textcolor{red}{Assente} \\
+            Docker & Dockerfile base & \textcolor{orange}{Parziale} \\
+            Test Generation & Non implementato & \textcolor{red}{Assente} \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+    
+    \begin{alertblock}{Conclusione Baseline}
+        Il progetto originale mancava della maggior parte degli strumenti di analisi della dependability.
+    \end{alertblock}
+\end{frame}
+
+% ============================================
+\section{Risultati: Before vs After}
+% ============================================
+
+% ------------------------------------------
+% SLIDE 6: Executive Summary
+% ------------------------------------------
+\begin{frame}{Executive Summary: Before vs After}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lccc}
+            \toprule
+            \textbf{Metrica} & \textbf{Before} & \textbf{After} & \textbf{Miglioramento} \\
+            \midrule
+            CI/CD Workflows & 1 & 4 & \textcolor{green!60!black}{+300\%} \\
+            Code Coverage & N/A & 91.9\% & \textcolor{green!60!black}{Nuova metrica} \\
+            Mutation Score & N/A & 85\% & \textcolor{green!60!black}{Nuova metrica} \\
+            SonarCloud Rating & N/A & AAA & \textcolor{green!60!black}{Triple-A} \\
+            Security Issues & Unknown & 0 High & \textcolor{green!60!black}{Verificato} \\
+            Test Count & 39 & 556 & \textcolor{green!60!black}{+1326\%} \\
+            JMH Benchmarks & 0 & 8 & \textcolor{green!60!black}{Nuova suite} \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+% ------------------------------------------
+% SLIDE 7: CI/CD Pipeline
+% ------------------------------------------
+\begin{frame}{Criterio 1: CI/CD Pipeline}
+    \begin{columns}
+        \column{0.45\textwidth}
+        \begin{block}{Before}
+            \begin{itemize}
+                \item 1 workflow base
+                \item Solo build Maven
+                \item Nessun test automatico
+                \item Nessun deploy
+            \end{itemize}
+        \end{block}
+        
+        \column{0.45\textwidth}
+        \begin{exampleblock}{After}
+            \begin{itemize}
+                \item 4 workflows completi
+                \item Build + Test + Coverage
+                \item Docker auto-push
+                \item PDF report auto-generato
+            \end{itemize}
+        \end{exampleblock}
+    \end{columns}
+    
+    \vspace{0.5cm}
+    
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{ll}
+            \toprule
+            \textbf{Workflow} & \textbf{Funzione} \\
+            \midrule
+            \texttt{ci.yml} & Build, test, coverage, mutation, security \\
+            \texttt{docker.yml} & Build image, push DockerHub, health check \\
+            \texttt{sonarcloud.yml} & Analisi qualità codice \\
+            \texttt{latex-pdf.yml} & Generazione report PDF \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+% ------------------------------------------
+% SLIDE 8: SonarCloud
+% ------------------------------------------
+\begin{frame}{Criterio 2: SonarCloud Analysis}
+    \begin{columns}
+        \column{0.45\textwidth}
+        \begin{block}{Before}
+            \centering
+            \textbf{Non integrato}
+            
+            \vspace{0.3cm}
+            Nessuna metrica di qualità disponibile
+        \end{block}
+        
+        \column{0.45\textwidth}
+        \begin{exampleblock}{After: Triple-A Rating}
+            \begin{table}
+                \centering
+                \small
+                \begin{tabular}{lc}
+                    Bugs & 0 \\
+                    Vulnerabilities & 0 \\
+                    Code Smells & 48 \\
+                    Coverage & 91.9\% \\
+                \end{tabular}
+            \end{table}
+        \end{exampleblock}
+    \end{columns}
+    
+    \vspace{0.5cm}
+    
+    \begin{center}
+        \Large
+        \textbf{Reliability: A} \quad \textbf{Security: A} \quad \textbf{Maintainability: A}
+    \end{center}
+\end{frame}
+
+% ------------------------------------------
+% SLIDE 9: Code Coverage (JaCoCo)
+% ------------------------------------------
+\begin{frame}{Criterio 5: Code Coverage (JaCoCo)}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{table}
+            \centering
+            \small
+            \begin{tabular}{lcc}
+                \toprule
+                \textbf{Metrica} & \textbf{Before} & \textbf{After} \\
+                \midrule
+                Instructions & N/A & 90\% \\
+                Branches & N/A & 84\% \\
+                Lines & N/A & 91.9\% \\
+                Methods & N/A & 85\% \\
+                Classes & N/A & 91\% \\
+                \bottomrule
+            \end{tabular}
+        \end{table}
+        
+        \column{0.5\textwidth}
+        \begin{table}
+            \centering
+            \small
+            \begin{tabular}{lc}
+                \toprule
+                \textbf{Package} & \textbf{Coverage} \\
+                \midrule
+                model & 98\% \\
+                owner & 93\% \\
+                vet & 91\% \\
+                visit & 89\% \\
+                system & 86\% \\
+                \bottomrule
+            \end{tabular}
+        \end{table}
+    \end{columns}
+    
+    \vspace{0.3cm}
+    
+    \begin{alertblock}{Risultato}
+        Coverage complessiva del \textbf{91.9\%} - ben oltre la soglia standard del 80\%.
+    \end{alertblock}
+\end{frame}
+
+% ------------------------------------------
+% SLIDE 10: Mutation Testing (PITest)
+% ------------------------------------------
+\begin{frame}{Criterio 6: Mutation Testing (PITest)}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{block}{Cos'è il Mutation Testing?}
+            Introduce \textit{mutazioni} nel codice per verificare se i test le rilevano. Un test efficace deve ``uccidere'' le mutazioni.
+        \end{block}
+        
+        \column{0.5\textwidth}
+        \begin{table}
+            \centering
+            \small
+            \begin{tabular}{lc}
+                \toprule
+                \textbf{Metrica} & \textbf{Valore} \\
+                \midrule
+                Mutations Generated & 1,003 \\
+                Mutations Killed & 853 \\
+                \textbf{Mutation Score} & \textbf{85\%} \\
+                Test Strength & 94\% \\
+                \bottomrule
+            \end{tabular}
+        \end{table}
+    \end{columns}
+    
+    \vspace{0.3cm}
+    
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lcc}
+            \toprule
+            \textbf{Mutator} & \textbf{Generated} & \textbf{Kill Rate} \\
+            \midrule
+            Conditional Boundary & 143 & 90\% \\
+            Negate Conditionals & 187 & 88\% \\
+            Return Values & 234 & 85\% \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+% ------------------------------------------
+% SLIDE 11: Docker & Container Testing
+% ------------------------------------------
+\begin{frame}{Criteri 3-4: Docker Image \& Container Testing}
+    \begin{columns}
+        \column{0.45\textwidth}
+        \begin{block}{Before}
+            \begin{itemize}
+                \item Dockerfile base
+                \item Nessun health check
+                \item Push manuale
+                \item No CI integration
+            \end{itemize}
+        \end{block}
+        
+        \column{0.45\textwidth}
+        \begin{exampleblock}{After}
+            \begin{itemize}
+                \item Multi-stage build
+                \item Health check integrato
+                \item Auto-push su DockerHub
+                \item Test container in CI
+            \end{itemize}
+        \end{exampleblock}
+    \end{columns}
+    
+    \vspace{0.5cm}
+    
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{ll}
+            \toprule
+            \textbf{Aspetto} & \textbf{Dettaglio} \\
+            \midrule
+            Repository & \texttt{wario03/petclinic-dependability} \\
+            Health Endpoint & \texttt{/actuator/health} \\
+            CI Testing & Container avviato e testato automaticamente \\
+            Total Pulls & 144+ \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+% ------------------------------------------
+% SLIDE 12: JMH Performance Benchmarks
+% ------------------------------------------
+\begin{frame}{Criterio 7: Performance Benchmarks (JMH)}
+    \begin{block}{Prima: Nessun Benchmark}
+        Nessuna baseline di performance documentata.
+    \end{block}
+    
+    \vspace{0.3cm}
+    
+    \begin{exampleblock}{Dopo: 8 Benchmark Implementati}
+        \begin{table}
+            \centering
+            \small
+            \begin{tabular}{lcr}
+                \toprule
+                \textbf{Operation} & \textbf{Avg Time (ms/op)} & \textbf{Status} \\
+                \midrule
+                OwnerCreation & 0.00012 & Optimal \\
+                PetCreation & 0.00008 & Optimal \\
+                VisitCreation & 0.00015 & Optimal \\
+                VetLookup & 0.00023 & Optimal \\
+                OwnerSearch & 0.00089 & Optimal \\
+                \bottomrule
+            \end{tabular}
+        \end{table}
+    \end{exampleblock}
+    
+    \textbf{Key Finding:} Tutte le operazioni completano in meno di 1ms.
+\end{frame}
+
+% ------------------------------------------
+% SLIDE 13: Test Generation (Randoop)
+% ------------------------------------------
+\begin{frame}{Criterio 8: Automated Test Generation (Randoop)}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{table}
+            \centering
+            \begin{tabular}{lcc}
+                \toprule
+                \textbf{Metrica} & \textbf{Before} & \textbf{After} \\
+                \midrule
+                Manual Tests & 39 & 39 \\
+                Generated Tests & 0 & 517 \\
+                \textbf{Total Tests} & \textbf{39} & \textbf{556} \\
+                Lines of Code & $\sim$2K & $\sim$30K \\
+                \bottomrule
+            \end{tabular}
+        \end{table}
+        
+        \column{0.5\textwidth}
+        \begin{alertblock}{Improvement}
+            \centering
+            \Huge\textbf{+1326\%}
+            
+            \normalsize Test Cases
+        \end{alertblock}
+    \end{columns}
+    
+    \vspace{0.5cm}
+    
+    Randoop ha generato automaticamente 517 regression tests, tutti eseguibili e passanti.
+\end{frame}
+
+% ------------------------------------------
+% SLIDE 14: Security Analysis
+% ------------------------------------------
+\begin{frame}{Criterio 9: Security Analysis}
+    \begin{columns}
+        \column{0.45\textwidth}
+        \begin{block}{Before}
+            \begin{itemize}
+                \item Nessuno scan di sicurezza
+                \item Vulnerabilità sconosciute
+                \item No dependency check
+            \end{itemize}
+        \end{block}
+        
+        \column{0.45\textwidth}
+        \begin{exampleblock}{After}
+            \begin{itemize}
+                \item SpotBugs + FindSecBugs
+                \item OWASP Dependency-Check
+                \item GitHub Secrets per API keys
+            \end{itemize}
+        \end{exampleblock}
+    \end{columns}
+    
+    \vspace{0.5cm}
+    
+    \begin{table}
+        \centering
+        \begin{tabular}{lcc}
+            \toprule
+            \textbf{Severity} & \textbf{Before} & \textbf{After} \\
+            \midrule
+            Critical & Unknown & \textcolor{green!60!black}{0} \\
+            High & Unknown & \textcolor{green!60!black}{0} \\
+            Medium & Unknown & 3 \\
+            Low (Info) & Unknown & 5 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+% ============================================
+\section{Conclusioni}
+% ============================================
+
+% ------------------------------------------
+% SLIDE 15: Riepilogo Finale
+% ------------------------------------------
+\begin{frame}{Riepilogo: Tutti i 9 Criteri Superati}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{clcc}
+            \toprule
+            \textbf{\#} & \textbf{Criterio} & \textbf{Stato} & \textbf{Evidenza} \\
+            \midrule
+            1 & CI/CD Pipeline & \textcolor{green!60!black}{\faCheckCircle} & 4 workflows \\
+            2 & SonarCloud & \textcolor{green!60!black}{\faCheckCircle} & AAA Rating \\
+            3 & Docker Image & \textcolor{green!60!black}{\faCheckCircle} & DockerHub push \\
+            4 & Container Test & \textcolor{green!60!black}{\faCheckCircle} & Health Check OK \\
+            5 & JaCoCo Coverage & \textcolor{green!60!black}{\faCheckCircle} & 91.9\% \\
+            6 & PITest Mutation & \textcolor{green!60!black}{\faCheckCircle} & 85\% score \\
+            7 & JMH Benchmarks & \textcolor{green!60!black}{\faCheckCircle} & 8 benchmarks \\
+            8 & Randoop Tests & \textcolor{green!60!black}{\faCheckCircle} & 517 tests \\
+            9 & Security Scan & \textcolor{green!60!black}{\faCheckCircle} & 0 Critical/High \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+% ------------------------------------------
+% SLIDE 16: Lessons Learned
+% ------------------------------------------
+\begin{frame}{Lessons Learned}
+    \begin{enumerate}
+        \item \textbf{Baseline First}: Stabilire metriche di partenza prima di qualsiasi modifica è essenziale per dimostrare i miglioramenti.
+        
+        \vspace{0.3cm}
+        
+        \item \textbf{Automation Pays Off}: L'investimento iniziale in CI/CD ripaga con quality checks consistenti su ogni commit.
+        
+        \vspace{0.3cm}
+        
+        \item \textbf{Security Early}: Integrare l'analisi di sicurezza fin dall'inizio previene problemi costosi.
+        
+        \vspace{0.3cm}
+        
+        \item \textbf{Test Quality > Quantity}: Il mutation testing (85\%) valida l'efficacia dei test meglio della sola coverage (91.9\%).
+    \end{enumerate}
+\end{frame}
+
+% ------------------------------------------
+% SLIDE 17: Links & Resources
+% ------------------------------------------
+\begin{frame}{Links \& Resources}
+    \begin{table}
+        \centering
+        \begin{tabular}{ll}
+            \toprule
+            \textbf{Resource} & \textbf{URL} \\
+            \midrule
+            GitHub Repository & github.com/mariocelzo/petclinic-dependability-analysis \\
+            SonarCloud & sonarcloud.io \\
+            DockerHub & hub.docker.com/r/wario03/petclinic-dependability \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+    
+    \vspace{1cm}
+    
+    \centering
+    \Large\textbf{Grazie per l'attenzione!}
+    
+    \vspace{0.5cm}
+    
+    \normalsize Domande?
+\end{frame}
+
+\end{document}
