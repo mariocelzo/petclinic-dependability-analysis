@@ -1,0 +1,112 @@
+name: Complete Pipeline Orchestrator
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  # FASE 1: Build e Test Base
+  build-and-test:
+    name: "Phase 1: Build and Test"
+    uses: ./.github/workflows/ci.yml
+    secrets: inherit
+
+  # FASE 2: Analisi Qualità (dipende da build)
+  code-quality:
+    name: "Phase 2: Code Quality Analysis"
+    needs: build-and-test
+    uses: ./.github/workflows/sonarcloud.yml
+    secrets: inherit
+
+  # FASE 3: Performance Testing (dipende da build)
+  performance-testing:
+    name: "Phase 3: Performance Benchmarks"
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Performance Workflow
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'performance-regression.yml',
+              ref: context.ref
+            });
+
+  # FASE 4: Docker Build (dipende da qualità)
+  docker-build:
+    name: "Phase 4: Docker Build and Push"
+    needs: [build-and-test, code-quality]
+    uses: ./.github/workflows/docker.yml
+    secrets: inherit
+
+  # FASE 5: Generazione Documentazione (dipende da tutto)
+  documentation:
+    name: "Phase 5: Generate Documentation"
+    needs: [build-and-test, code-quality, docker-build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger LaTeX Report Build
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'latex-pdf.yml',
+              ref: context.ref
+            });
+      
+      - name: Trigger Presentation Build
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'presentation-pdf.yml',
+              ref: context.ref
+            });
+
+  # FASE 6: Final Summary
+  pipeline-summary:
+    name: "Phase 6: Pipeline Summary"
+    needs: [build-and-test, code-quality, performance-testing, docker-build, documentation]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate Pipeline Summary
+        run: |
+          echo "## 🎯 Complete Pipeline Execution Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Pipeline Phases" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Phase | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| 1. Build & Test | ${{ needs.build-and-test.result == 'success' && '✅ Success' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 2. Code Quality | ${{ needs.code-quality.result == 'success' && '✅ Success' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 3. Performance | ${{ needs.performance-testing.result == 'success' && '✅ Success' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 4. Docker Build | ${{ needs.docker-build.result == 'success' && '✅ Success' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 5. Documentation | ${{ needs.documentation.result == 'success' && '✅ Success' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Overall Status" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ needs.build-and-test.result }}" == "success" ] && \
+             [ "${{ needs.code-quality.result }}" == "success" ] && \
+             [ "${{ needs.docker-build.result }}" == "success" ]; then
+            echo "✅ **Pipeline completed successfully!**" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **Pipeline failed - check individual phases**" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📊 **Commit**: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "🌿 **Branch**: \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "👤 **Author**: ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+      
+      - name: Notify on Failure
+        if: needs.build-and-test.result == 'failure' || needs.code-quality.result == 'failure' || needs.docker-build.result == 'failure'
+        run: |
+          echo "::error::Pipeline execution failed - check the logs above"
+          exit 1

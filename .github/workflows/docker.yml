@@ -9,6 +9,7 @@ on:
       - "pom.xml"
       - ".github/workflows/docker.yml"
   workflow_dispatch:
+  workflow_call:
 
 jobs:
   docker:
