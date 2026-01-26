@@ -7,6 +7,7 @@ on:
       - "**/*.tex"
       - "**/*.bib"
   workflow_dispatch:
+  workflow_call:
 
 jobs:
   build-pdf:

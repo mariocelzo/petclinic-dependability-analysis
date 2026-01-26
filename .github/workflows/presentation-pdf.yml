@@ -6,6 +6,7 @@ on:
       - "docs/presentation/**"
       - ".github/workflows/presentation-pdf.yml"
   workflow_dispatch:
+  workflow_call:
 
 jobs:
   build-presentation:
