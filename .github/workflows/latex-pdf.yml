@@ -1,11 +1,6 @@
 name: LaTeX PDF Build
 
 on:
-  push:
-    paths:
-      - "docs/report/**"
-      - "**/*.tex"
-      - "**/*.bib"
   workflow_dispatch:
   workflow_call:
 

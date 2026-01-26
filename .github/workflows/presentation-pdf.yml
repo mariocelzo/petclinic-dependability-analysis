@@ -1,10 +1,6 @@
 name: Presentation PDF Build
 
 on:
-  push:
-    paths:
-      - "docs/presentation/**"
-      - ".github/workflows/presentation-pdf.yml"
   workflow_dispatch:
   workflow_call:
 
